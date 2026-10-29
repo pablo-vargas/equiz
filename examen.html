@@ -1,0 +1,2825 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>eQuiz Nefrología — Residencia Médica</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap"
+    rel="stylesheet">
+  <style>
+    :root {
+      --primary: #0284c7;
+      --primary-dark: #0369a1;
+      --primary-light: #e0f2fe;
+      --primary-contrast: #ffffff;
+      --bg: #f8fafc;
+      --surface: #ffffff;
+      --surface-variant: #f1f5f9;
+      --text: #0f172a;
+      --text-muted: #64748b;
+      --border: #e2e8f0;
+      --success: #16a34a;
+      --success-light: #dcfce7;
+      --danger: #dc2626;
+      --danger-light: #fee2e2;
+      --warning: #d97706;
+      --warning-light: #fef3c7;
+      --radius: 14px;
+      --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.07), 0 2px 4px -2px rgb(0 0 0 / 0.05);
+      --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.08), 0 4px 6px -4px rgb(0 0 0 / 0.04);
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #090d16;
+        --surface: #131c2e;
+        --surface-variant: #1e293b;
+        --text: #f8fafc;
+        --text-muted: #94a3b8;
+        --border: #334155;
+        --primary-light: #082f49;
+        --success-light: #052e16;
+        --danger-light: #450a0a;
+        --warning-light: #451a03;
+      }
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    header {
+      background-color: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 14px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      backdrop-filter: blur(8px);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 800;
+      font-size: 1.15rem;
+      color: var(--primary);
+      cursor: pointer;
+    }
+
+    .brand span {
+      color: var(--text);
+      font-weight: 500;
+      font-size: 0.9rem;
+    }
+
+    .nav-actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    button {
+      font-family: inherit;
+      cursor: pointer;
+      border: none;
+      outline: none;
+      transition: all 0.18s ease;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    .btn {
+      padding: 10px 18px;
+      border-radius: var(--radius);
+      font-size: 0.95rem;
+      font-weight: 600;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: var(--primary-contrast);
+    }
+
+    .btn-primary:hover {
+      background: var(--primary-dark);
+      transform: translateY(-1px);
+    }
+
+    .btn-secondary {
+      background: var(--surface-variant);
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+
+    .btn-secondary:hover {
+      background: var(--border);
+    }
+
+    .btn-outline {
+      background: transparent;
+      color: var(--primary);
+      border: 1.5px solid var(--primary);
+    }
+
+    .btn-outline:hover {
+      background: var(--primary-light);
+    }
+
+    .btn-danger {
+      background: var(--danger-light);
+      color: var(--danger);
+      border: 1px solid var(--danger);
+    }
+
+    .btn-danger:hover {
+      background: var(--danger);
+      color: #fff;
+    }
+
+    .btn-sm {
+      padding: 6px 12px;
+      font-size: 0.85rem;
+      border-radius: 8px;
+    }
+
+    .btn:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+      transform: none !important;
+    }
+
+    main {
+      flex: 1;
+      width: 100%;
+      max-width: 820px;
+      margin: 0 auto;
+      padding: 24px 16px;
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 22px;
+      box-shadow: var(--shadow);
+      margin-bottom: 20px;
+    }
+
+    /* Vistas */
+    .view {
+      display: none;
+    }
+
+    .view.active {
+      display: block;
+      animation: fadeIn 0.22s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(6px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Home View */
+    .hero-card {
+      background: linear-gradient(135deg, var(--surface) 0%, var(--surface-variant) 100%);
+      border: 1px solid var(--border);
+      border-left: 5px solid var(--primary);
+    }
+
+    .hero-title {
+      font-size: 1.5rem;
+      font-weight: 800;
+      margin-bottom: 6px;
+    }
+
+    .hero-desc {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      line-height: 1.5;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 4px 12px;
+      background: var(--primary-light);
+      color: var(--primary);
+      border-radius: 999px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      margin-top: 12px;
+    }
+
+    .chips-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 14px 0;
+    }
+
+    .chip {
+      padding: 8px 16px;
+      border-radius: 999px;
+      border: 1.5px solid var(--border);
+      background: var(--surface);
+      color: var(--text);
+      font-weight: 600;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .chip.active,
+    .chip:hover {
+      background: var(--primary-light);
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+
+    .counter-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 0;
+      border-top: 1px solid var(--border);
+    }
+
+    /* Quiz View */
+    .progress-bar {
+      width: 100%;
+      height: 8px;
+      background: var(--surface-variant);
+      border-radius: 999px;
+      overflow: hidden;
+      margin-bottom: 16px;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: var(--primary);
+      transition: width 0.3s ease;
+      width: 0%;
+    }
+
+    .quiz-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    .category-tag {
+      background: var(--surface-variant);
+      color: var(--text-muted);
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .question-title {
+      font-size: 1.15rem;
+      font-weight: 700;
+      line-height: 1.55;
+      margin-bottom: 20px;
+    }
+
+    .options-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 24px;
+    }
+
+    .option-item {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 15px 18px;
+      border-radius: var(--radius);
+      border: 1.5px solid var(--border);
+      background: var(--surface);
+      cursor: pointer;
+      transition: all 0.15s ease;
+      font-size: 0.95rem;
+      line-height: 1.4;
+    }
+
+    .option-item:hover {
+      border-color: var(--primary);
+      background: var(--surface-variant);
+    }
+
+    .option-item.selected {
+      border-color: var(--primary);
+      background: var(--primary-light);
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .option-letter {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      background: var(--surface-variant);
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 0.85rem;
+      flex-shrink: 0;
+    }
+
+    .option-item.selected .option-letter {
+      background: var(--primary);
+      color: #fff;
+    }
+
+    .quiz-actions {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-top: 14px;
+      border-top: 1px solid var(--border);
+    }
+
+    /* Result View */
+    .result-center {
+      text-align: center;
+      padding: 30px 10px;
+    }
+
+    .score-circle {
+      width: 140px;
+      height: 140px;
+      border-radius: 50%;
+      margin: 0 auto 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: var(--primary-light);
+      border: 4px solid var(--primary);
+    }
+
+    .score-pct {
+      font-size: 2.4rem;
+      font-weight: 900;
+      color: var(--primary);
+    }
+
+    .score-sub {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text-muted);
+    }
+
+    /* Review View */
+    .filter-tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+
+    .review-card {
+      background: var(--surface);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius);
+      padding: 18px;
+      margin-bottom: 16px;
+    }
+
+    .review-card.correct {
+      border-left: 5px solid var(--success);
+    }
+
+    .review-card.wrong {
+      border-left: 5px solid var(--danger);
+    }
+
+    .pearl-box {
+      margin-top: 14px;
+      padding: 14px 16px;
+      background: var(--primary-light);
+      border: 1px solid rgba(2, 132, 199, 0.3);
+      border-radius: 10px;
+      font-size: 0.9rem;
+      line-height: 1.5;
+    }
+
+    .pearl-title {
+      font-weight: 800;
+      font-size: 0.82rem;
+      color: var(--primary-dark);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* History View */
+    .history-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      margin-bottom: 12px;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .history-item:hover {
+      border-color: var(--primary);
+      background: var(--surface-variant);
+    }
+
+    /* Import View */
+    textarea {
+      width: 100%;
+      height: 240px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.85rem;
+      padding: 14px;
+      border-radius: var(--radius);
+      border: 1.5px solid var(--border);
+      background: var(--surface);
+      color: var(--text);
+      outline: none;
+      margin: 12px 0;
+      resize: vertical;
+    }
+
+    textarea:focus {
+      border-color: var(--primary);
+    }
+
+    .alert {
+      padding: 14px 16px;
+      border-radius: 10px;
+      font-size: 0.9rem;
+      margin-bottom: 14px;
+      display: flex;
+      gap: 10px;
+      line-height: 1.4;
+    }
+
+    .alert-success {
+      background: var(--success-light);
+      color: var(--success);
+      border: 1px solid var(--success);
+    }
+
+    .alert-danger {
+      background: var(--danger-light);
+      color: var(--danger);
+      border: 1px solid var(--danger);
+    }
+
+    footer {
+      text-align: center;
+      padding: 20px;
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      border-top: 1px solid var(--border);
+      background: var(--surface);
+    }
+  </style>
+</head>
+
+<body>
+
+  <header>
+    <div class="brand" onclick="navigate('home')">
+      <span>🩺</span> eQuiz <span>| Residencia Nefrología</span>
+    </div>
+    <div class="nav-actions">
+      <button class="btn btn-secondary btn-sm" onclick="navigate('history')" title="Historial de Quizzes">🕒
+        Historial</button>
+      <button class="btn btn-secondary btn-sm" onclick="navigate('import')" title="Cargar o editar preguntas JSON">⚙️
+        Banco JSON</button>
+    </div>
+  </header>
+
+  <main>
+    <!-- VISTA INICIO -->
+    <div id="view-home" class="view active">
+      <div class="card hero-card">
+        <div class="hero-title">Simulador de Examen de Nefrología</div>
+        <div class="hero-desc">
+          Banco consolidado de preguntas y casos clínicos de alta exigencia para examen de Residencia Médica. Preguntas
+          aleatorias y retroalimentación pedagógica con perlas clínicas.
+        </div>
+        <div class="badge" id="home-total-badge">📚 71 preguntas disponibles</div>
+      </div>
+
+      <div class="card">
+        <h3 style="margin-bottom: 8px; font-weight: 700;">Configuración de Sesión</h3>
+        <p style="color: var(--text-muted); font-size: 0.9rem;">Selecciona cuántas preguntas aleatorias deseas responder
+          en este intento:</p>
+
+        <div class="chips-group" id="chips-container">
+          <button class="chip" onclick="selectCount(5)">5</button>
+          <button class="chip active" onclick="selectCount(10)">10</button>
+          <button class="chip" onclick="selectCount(20)">20</button>
+          <button class="chip" onclick="selectCount(35)">35</button>
+          <button class="chip" onclick="selectCount('all')" id="chip-all">Todas</button>
+        </div>
+
+        <div class="counter-row">
+          <span style="font-weight: 600;">Cantidad seleccionada: <span id="selected-count-label"
+              style="color: var(--primary); font-weight: 800;">10</span></span>
+          <div style="display: flex; gap: 8px;">
+            <button class="btn btn-secondary btn-sm" onclick="adjustCount(-1)">− 1</button>
+            <button class="btn btn-secondary btn-sm" onclick="adjustCount(1)">+ 1</button>
+          </div>
+        </div>
+
+        <div id="round-info"
+          style="display: none; align-items: center; justify-content: space-between; margin-top: 12px; padding: 10px 14px; background: var(--surface-variant); border-radius: 8px; font-size: 0.85rem;">
+          <span id="round-status-text" style="color: var(--text-muted);"></span>
+          <button class="btn btn-secondary btn-sm" onclick="resetRound()"
+            style="font-size: 0.78rem; padding: 4px 8px;">↺ Reiniciar ciclo</button>
+        </div>
+
+        <button class="btn btn-primary" style="width: 100%; margin-top: 18px; padding: 14px; font-size: 1.05rem;"
+          onclick="startQuiz()">
+          ▶ Iniciar Quiz Aleatorio
+        </button>
+      </div>
+    </div>
+
+    <!-- VISTA QUIZ -->
+    <div id="view-quiz" class="view">
+      <div class="quiz-header">
+        <span class="category-tag" id="quiz-category">Categoría</span>
+        <span style="font-weight: 700; font-size: 0.9rem;" id="quiz-counter">Pregunta 1 de 10</span>
+      </div>
+
+      <div class="progress-bar">
+        <div class="progress-fill" id="quiz-progress"></div>
+      </div>
+
+      <div class="card">
+        <div class="question-title" id="quiz-question-text">Enunciado de la pregunta...</div>
+        <div class="options-list" id="quiz-options-container"></div>
+
+        <div class="quiz-actions">
+          <button class="btn btn-secondary" id="btn-prev" onclick="prevQuestion()">← Anterior</button>
+          <button class="btn btn-danger btn-sm" onclick="quitQuiz()">Abandonar</button>
+          <button class="btn btn-primary" id="btn-next" onclick="nextQuestion()" disabled>Siguiente →</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- VISTA RESULTADOS -->
+    <div id="view-result" class="view">
+      <div class="card result-center">
+        <h2 style="font-weight: 800; margin-bottom: 20px;">¡Sesión Finalizada!</h2>
+        <div class="score-circle">
+          <div class="score-pct" id="res-pct">0%</div>
+          <div class="score-sub" id="res-score-sub">0 / 0 correctas</div>
+        </div>
+        <p id="res-feedback"
+          style="font-size: 1rem; color: var(--text-muted); line-height: 1.5; max-width: 500px; margin: 0 auto 24px;">
+        </p>
+
+        <div style="display: flex; flex-direction: column; gap: 10px; max-width: 400px; margin: 0 auto;">
+          <button class="btn btn-primary" style="padding: 13px; font-size: 1rem;" onclick="openReview()">
+            📖 Revisar Respuestas y Perlas Clínicas
+          </button>
+          <button class="btn btn-secondary" onclick="navigate('home')">
+            🔄 Iniciar Nuevo Intento
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- VISTA REVISIÓN -->
+    <div id="view-review" class="view">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+        <div>
+          <h2 style="font-weight: 800; font-size: 1.3rem;">Revisión y Refuerzo Pedagógico</h2>
+          <span style="font-size: 0.88rem; color: var(--text-muted);" id="review-score-header">Puntaje: 0%</span>
+        </div>
+        <button class="btn btn-secondary btn-sm" onclick="returnFromReview()">← Volver</button>
+      </div>
+
+      <div class="filter-tabs">
+        <button class="chip active" id="tab-all" onclick="filterReview('all')">Todas (<span
+            id="cnt-all">0</span>)</button>
+        <button class="chip" id="tab-wrong" onclick="filterReview('wrong')">Erróneas (<span
+            id="cnt-wrong">0</span>)</button>
+        <button class="chip" id="tab-correct" onclick="filterReview('correct')">Correctas (<span
+            id="cnt-correct">0</span>)</button>
+      </div>
+
+      <div id="review-cards-list"></div>
+    </div>
+
+    <!-- VISTA HISTORIAL -->
+    <div id="view-history" class="view">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <h2 style="font-weight: 800; font-size: 1.3rem;">Historial de Intentos</h2>
+        <div style="display: flex; gap: 8px;">
+          <button class="btn btn-danger btn-sm" onclick="clearHistory()" id="btn-clear-history">Borrar
+            Historial</button>
+          <button class="btn btn-secondary btn-sm" onclick="navigate('home')">← Inicio</button>
+        </div>
+      </div>
+
+      <div id="history-list-container"></div>
+    </div>
+
+    <!-- VISTA IMPORTAR JSON -->
+    <div id="view-import" class="view">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+        <h2 style="font-weight: 800; font-size: 1.3rem;">Banco de Preguntas JSON</h2>
+        <button class="btn btn-secondary btn-sm" onclick="navigate('home')">← Inicio</button>
+      </div>
+
+      <div id="import-alert-container"></div>
+
+      <div class="card">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <span style="font-weight: 600;">Editor y Validador de Preguntas:</span>
+          <button class="btn btn-secondary btn-sm" onclick="loadTemplate()">📄 Ver Plantilla Ejemplo</button>
+        </div>
+
+        <textarea id="json-input" placeholder="Pega aquí tu arreglo JSON con las preguntas..."></textarea>
+
+        <div
+          style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; padding: 12px; background: var(--surface-variant); border-radius: 10px;">
+          <div>
+            <div style="font-weight: 600; font-size: 0.95rem;">Reemplazar todo el banco actual</div>
+            <div style="color: var(--text-muted); font-size: 0.82rem;">Si se desmarca, se sumarán a las preguntas
+              existentes en localStorage.</div>
+          </div>
+          <input type="checkbox" id="check-replace-all" style="transform: scale(1.3); cursor: pointer;" checked />
+        </div>
+
+        <div style="display: flex; gap: 10px;">
+          <button class="btn btn-primary" style="flex: 1; padding: 12px;" onclick="saveImportedJson()">💾 Validar e
+            Importar al Navegador</button>
+          <button class="btn btn-secondary" onclick="restoreInitialQuestions()">↺ Restaurar Banco Original</button>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    eQuiz Residencia Nefrología • Funciona 100% Offline con <code>localStorage</code> • Listo para GitHub Pages
+  </footer>
+
+  <script>
+    const DEFAULT_QUESTIONS = [
+      {
+        "pregunta": "¿Por qué característica morfológica histológica se diferencia la esclerosis glomerular esclerosante colapsante (variante colapsante de la EGFS) de otras variantes glomerulares?",
+        "opciones": [
+          "Presencia de células espumosas exclusivamente en el mesangio",
+          "Hipertrofia e hiperplasia del epitelio parietal de la cápsula de Bowman",
+          "Hipercelularidad endocapilar neutrofílica difusa",
+          "Hipertrofia e hiperplasia del epitelio visceral (podocitos) con colapso de la luz capilar"
+        ],
+        "indiceCorrecto": 3,
+        "explicacion": "Fuente: examen_glomerulo_RESP.pdf (Examen 1, Pregunta 1). La variante colapsante de la EGFS se caracteriza morfológicamente por el colapso del ovillo capilar acompañado de una marcada hipertrofia e hiperplasia de los podocitos (epitelio visceral) que forman 'pseudosemilunas' en el espacio de Bowman.",
+        "categoria": "Examen Modelo Residencia - Glomerulopatías"
+      },
+      {
+        "pregunta": "De acuerdo con el modelo de examen de la Residencia, la injuria celular inicial en la formación de las crecientes o semilunas extracapilares ocurre en:",
+        "opciones": [
+          "Las células endoteliales",
+          "Las células mesangiales",
+          "La membrana basal glomerular exclusivamente",
+          "Los podocitos parietales aislados"
+        ],
+        "indiceCorrecto": 0,
+        "explicacion": "Fuente: examen_glomerulo_RESP.pdf (Examen 1, Pregunta 2). El evento desencadenante inicial en la génesis de una creciente extracapilar es la injuria grave del endotelio y la disrupción de la MBG, que permite la salida de fibrina y monocitos hacia el espacio de Bowman.",
+        "categoria": "Examen Modelo Residencia - Glomerulopatías"
+      },
+      {
+        "pregunta": "¿En cuál de las siguientes entidades NO existe reacción humoral (es decir, cursa con Inmunofluorescencia renal paucinmune)?",
+        "opciones": [
+          "Glomerulonefritis rápidamente evolutiva Tipo II",
+          "Nefropatía por IgA",
+          "Nefritis Lúpica Clase IV",
+          "Vasculitis de pequeños vasos asociadas a ANCA"
+        ],
+        "indiceCorrecto": 3,
+        "explicacion": "Fuente: examen_glomerulo_RESP.pdf (Examen 1, Pregunta 3). Las vasculitis asociadas a ANCA (GPA, MPA, EGPA) producen glomerulonefritis extracapilares paucinmunes, caracterizadas por ausencia o escasísimos depósitos de inmunoglobulinas y complemento en la inmunofluorescencia.",
+        "categoria": "Examen Modelo Residencia - Glomerulopatías"
+      },
+      {
+        "pregunta": "¿Cuál de las siguientes lesiones histológicas NO corresponde al patrón de proliferación endocapilar?",
+        "opciones": [
+          "Proliferación de células endoteliales",
+          "Reduplicación de la membrana basal glomerular (dobles contornos)",
+          "Proliferación de células mesangiales",
+          "Infiltrado de polimorfonucleares y monocitos"
+        ],
+        "indiceCorrecto": 1,
+        "explicacion": "Fuente: examen_glomerulo_RESP.pdf (Examen 1, Pregunta 4). La reduplicación de la membrana basal (dobles contornos por interposición mesangial) es la lesión característica del patrón membranoproliferativo, no del patrón endocapilar puro.",
+        "categoria": "Examen Modelo Residencia - Glomerulopatías"
+      },
+      {
+        "pregunta": "En la Nefropatía por IgA, ¿cuál es la ubicación patognomónica de los depósitos de inmunocomplejos por Inmunofluorescencia?",
+        "opciones": [
+          "Exclusivamente subepiteliales en forma de jorobas",
+          "Predominantemente mesangiales y paramesangiales tiñendo para IgA y C3",
+          "Lineales continuos de IgG a lo largo de la pared capilar",
+          "Trombos hialinos intracapilares puros"
+        ],
+        "indiceCorrecto": 1,
+        "explicacion": "Fuente: examen_glomerulo_RESP.pdf (Examen 1, Pregunta 5) y NEFROPATIA CAMBIOS MINIMOS.docx. La Inmunofluorescencia de la Nefropatía por IgA muestra depósitos granulares en el mesangio y paramesangio con tinción codominante o dominante para IgA1 (Galactosa deficiente) y C3.",
+        "categoria": "Examen Modelo Residencia - Glomerulopatías"
+      },
+      {
+        "pregunta": "¿Cuál es la lesión patognomónica en Microscopía Electrónica de la Glomerulopatía Membranosa?",
+        "opciones": [
+          "Depósitos denso-electrónicos subepiteliales acompañados de proyección de matriz de la MBG ('espículas' o spikes)",
+          "Fusión pedicelar difusa sin depósitos electrón-densos",
+          "Depósitos intramembranosos continuos en cinta",
+          "Inclusiones de oro citoplasmáticas tubulares"
+        ],
+        "indiceCorrecto": 0,
+        "explicacion": "Fuente: examen_glomerulo_RESP.pdf (Examen 1, Pregunta 6). La nefropatía membranosa se caracteriza por depósitos subepiteliales de inmunocomplejos (IgG4 anti-PLA2R) que inducen la formación de espículas (spikes) de membrana basal entre los depósitos.",
+        "categoria": "Examen Modelo Residencia - Glomerulopatías"
+      },
+      {
+        "pregunta": "En las vasculitis de pequeños vasos asociadas a ANCA, ¿cuál es el factor clínico al inicio de la enfermedad que presenta mayor valor pronóstico independiente para la función renal a largo plazo?",
+        "opciones": [
+          "El título circulante de c-ANCA o p-ANCA",
+          "La magnitud de la proteinuria de 24 horas",
+          "El nivel de Creatinina sérica (o filtrado glomerular) al inicio de la enfermedad",
+          "La presencia de púrpura vascular en miembros inferiores"
+        ],
+        "indiceCorrecto": 2,
+        "explicacion": "Fuente: examen_glomerulo_RESP.pdf (Examen 1, Pregunta 7) y VASCULITIS.docx. La severidad del deterioro renal (nivel de creatinina plasmática inicial) al momento del diagnóstico e inicio del tratamiento es el predictor clínico independiente más potente de evolución a insuficiencia renal terminal.",
+        "categoria": "Examen Modelo Residencia - Vasculitis"
+      },
+      {
+        "pregunta": "En relación con el Síndrome Nefrótico por Cambios Mínimos, ¿cuál es el hallazgo patognomónico al Microscopio Electrónico?",
+        "opciones": [
+          "Depósitos granulares mesangiales de C1q",
+          "Borramiento o fusión pedicelar difusa de los podocitos sin depósitos inmunológicos",
+          "Duplicación de la membrana basal glomerular con dobles contornos",
+          "Microtúbulos huecos alineados en paralelo de 50 nm"
+        ],
+        "indiceCorrecto": 1,
+        "explicacion": "Fuente: examen_glomerulo_RESP.pdf (Examen 1, Pregunta 8) y NEFROPATIA CAMBIOS MINIMOS.docx. En la Enfermedad de Cambios Mínimos, la MO es normal y la IF es negativa; la ME revela borramiento o effacement pedicelar difuso (>80% de la superficie podocitaria).",
+        "categoria": "Examen Modelo Residencia - Glomerulopatías"
+      },
+      {
+        "pregunta": "En la Nefritis Lúpica Clase III (Proliferativa Focal), ¿cuál es el porcentaje de glomérulos comprometidos en la muestra histológica?",
+        "opciones": [
+          "Menos del 50% de los glomérulos examinados",
+          "Exactamente el 100% de los glomérulos",
+          "Entre 75% y 90%",
+          "0% (los glomérulos son normales al MO)"
+        ],
+        "indiceCorrecto": 0,
+        "explicacion": "Fuente: examen_glomerulo_RESP.pdf (Examen 1, Pregunta 9) y Nefritis Lupica.pptx. La Nefritis Lúpica Clase III se define por lesiones proliferativas focales (endo o extracapilares) que afectan a menos del 50% de los glomérulos totales de la biopsia.",
+        "categoria": "Examen Modelo Residencia - Nefritis Lúpica"
+      },
+      {
+        "pregunta": "La Gammapatía Monoclonal de Significado Renal (GMSR) se define por las siguientes afirmaciones, EXCEPTO una:",
+        "opciones": [
+          "Presencia de células plasmáticas en médula ósea entre 10% y 20%",
+          "Aumento de la creatinina sérica o compromiso de función renal",
+          "Demostración de depósitos renales de inmunoglobulinas o cadenas livianas monoclonales",
+          "Componente monoclonal en suero u orina menor a 3 g/dl"
+        ],
+        "indiceCorrecto": 0,
+        "explicacion": "Fuente: examen_glomerulo_RESP.pdf (Examen 1, Pregunta 10) y Gammapatias monoclonales.pptx. La GMSR cumple criterios de GMSI desde el punto de vista hematológico, lo que exige que los plasmocitos clonales en médula ósea sean MENORES al 10% (<10%) y el componente M <3 g/dl, pero con daño renal directo demostrado por biopsia.",
+        "categoria": "Examen Modelo Residencia - Discrasias Plasmáticas"
+      },
+      {
+        "pregunta": "En la Nefritis Lúpica Clase IV (Proliferativa Difusa), ¿cuál de los siguientes hallazgos de microscopía óptica es patognomónico?",
+        "opciones": [
+          "Afectación de ≥50% de los glomérulos con depósitos subendoteliales gruesos en 'asa de alambre' e infiltración endocapilar",
+          "Borramiento pedicelar aislado sin depósitos parietales",
+          "Fibrosis intersticial masiva sin inflamación glomerular",
+          "Depósitos de amiloide AL Rojo Congo positivos"
+        ],
+        "indiceCorrecto": 0,
+        "explicacion": "Fuente: examen_glomerulo_RESP.pdf (Examen 1, Pregunta 11) y nefritis lupica 1.docx. La Clase IV afecta al 50% o más de los glomérulos con proliferación endo/extracapilar severa, trombos hialinos y los característicos depósitos subendoteliales en 'asa de alambre' (wire loops).",
+        "categoria": "Examen Modelo Residencia - Nefritis Lúpica"
+      },
+      {
+        "pregunta": "En la Inmunofluorescencia renal de la Nefritis Lúpica, ¿a qué se denomina patrón 'Full House'?",
+        "opciones": [
+          "A la positividad concomitante para IgG, IgA, IgM, C3 y C1q en los depósitos glomerulares",
+          "A la tinción exclusiva para C3 con negatividad para inmunoglobulinas",
+          "A la tinción aislada para cadenas livianas Kappa",
+          "A la tinción lineal de albúmina en los túbulos proximales"
+        ],
+        "indiceCorrecto": 0,
+        "explicacion": "Fuente: examen_glomerulo_RESP.pdf (Examen 1, Pregunta 12). El patrón en 'Full House' es característico del lupus y consiste en la tinción positiva simultánea para las tres clases principales de inmunoglobulinas (IgG, IgA, IgM) y ambas fracciones del complemento (C3 y C1q).",
+        "categoria": "Examen Modelo Residencia - Nefritis Lúpica"
+      },
+      {
+        "pregunta": "¿A qué se denomina 'Podocitopatía Lúpica' según los criterios histopatológicos consensuados por Bomback y Markowitz?",
+        "opciones": [
+          "A cualquier lesión lúpica con fusión pedicelar al ME independientemente de la clase histológica",
+          "Al síndrome nefrótico de comienzo abrupto en un paciente con LES cuya PBR muestra glomérulos normales (NCM) o EGFS, Inmunofluorescencia negativa y fusión pedicelar difusa al ME",
+          "A la Nefritis Lúpica Clase IV con patrón 'Full House' en IF",
+          "A la presencia de vasculopatía necrotizante no inflamatoria con C3 bajo"
+        ],
+        "indiceCorrecto": 1,
+        "explicacion": "Fuente: examen_glomerulo_RESP.pdf (Examen 1, Pregunta 13) y Nefritis Lupica.pptx. La podocitopatía lúpica se define por síndrome nefrótico en un paciente lúpico con MO que remeda cambios mínimos o EGFS, IF negativa para inmunocomplejos parietales y borramiento pedicelar difuso en ME.",
+        "categoria": "Examen Modelo Residencia - Nefritis Lúpica"
+      },
+      {
+        "pregunta": "En la clasificación moderna de la Glomerulonefritis Membranoproliferativa (GNMP), esta entidad se categoriza patogénicamente según:",
+        "opciones": [
+          "El patrón de lobulación en la microscopía óptica",
+          "Los hallazgos y depósitos en la Inmunofluorescencia renal (diferenciando formas mediadas por Inmunocomplejos vs. Glomerulopatías C3)",
+          "La concentración de complemento C3 en plasma únicamente",
+          "El espesor de las espículas parietales al microscopio electrónico"
+        ],
+        "indiceCorrecto": 1,
+        "explicacion": "Fuente: examen_glomerulo_RESP.pdf (Examen 1, Pregunta 14 / Examen 2, Pregunta 19) y GPC3.docx. La reestructuración actual de las GNMP se basa estrictamente en la Inmunofluorescencia: si tiñe para inmunoglobulinas y complemento es GNMP por inmunocomplejos; si tiñe exclusivamente para C3 (sin Igs), se trata de una Glomerulopatía C3.",
+        "categoria": "Examen Modelo Residencia - Glomerulopatías"
+      },
+      {
+        "pregunta": "¿Cuál es la causa morfológica del aspecto en 'doble contorno' o 'raíl de tren' de la membrana basal glomerular en la GNMP?",
+        "opciones": [
+          "La interposición del citoplasma mesangial y/o monocítico en el espacio subendotelial con síntesis de nueva MBG por fuera del depósito",
+          "El borramiento pedicelar podocitario masivo",
+          "La acumulación de cristales de urato monosódico en la lámina densa",
+          "La ruptura de la cápsula de Bowman por neutrófilos"
+        ],
+        "indiceCorrecto": 0,
+        "explicacion": "Fuente: examen_glomerulo_RESP.pdf (Examen 1, Pregunta 15) y GN PRIMARIAS.pptx. Los dobles contornos resultan de la interposición mesangial hacia la periferia del asa capilar (subendotelial), sintetizando una nueva capa de membrana basal sobre la membrana original.",
+        "categoria": "Examen Modelo Residencia - Glomerulopatías"
+      },
+      {
+        "pregunta": "En la Glomerulonefritis Aguda Postestreptocócica (GNPE), ¿cuál es el patrón característico de la Inmunofluorescencia en la fase aguda?",
+        "opciones": [
+          "Depósitos granulares gruesos parietales y mesangiales predominantemente de C3 e IgG ('cielo estrellado' o guirnalda)",
+          "Depósitos lineales continuos de IgG a lo largo de la MBG",
+          "Inmunofluorescencia paucinmune totalmente negativa",
+          "Tinción exclusiva para cadenas livianas Lambda en arteriolas"
+        ],
+        "indiceCorrecto": 0,
+        "explicacion": "Fuente: examen_glomerulo_RESP.pdf (Examen 1, Pregunta 16) y Glomerulonefritis aguda postestreptocócica.docx. La IF en la GNPE muestra depósitos granulares groseros parietales y mesangiales ('starry sky' o 'garland') predominantemente para C3 e IgG.",
+        "categoria": "Examen Modelo Residencia - GNPE"
+      },
+      {
+        "pregunta": "¿Cuál de las siguientes afirmaciones es CORRECTA sobre los tiempos de latencia en la Glomerulonefritis Aguda Postestreptocócica?",
+        "opciones": [
+          "La latencia tras un foco faríngeo es de 1 a 3 semanas; mientras que tras un foco cutáneo (impétigo/piodermitis) es de 4 a 6 semanas",
+          "La latencia es idéntica de 24 horas para ambos focos infecciosos",
+          "El foco cutáneo presenta una latencia menor a 3 días y la faringitis 6 meses",
+          "No existe período de latencia, el síndrome nefrítico es simultáneo a la fiebre"
+        ],
+        "indiceCorrecto": 0,
+        "explicacion": "Fuente: examen_glomerulo_RESP.pdf (Examen 1, Pregunta 17) y Glomerulonefritis aguda postestreptocócica.docx. El período de latencia típico de la GNPE es de 1-3 semanas (promedio 10-14 días) tras una faringitis, y más prolongado (4-6 semanas) tras una infección cutánea por estreptococo.",
+        "categoria": "Examen Modelo Residencia - GNPE"
+      },
+      {
+        "pregunta": "¿Qué hallazgo ultraestructural al Microscopio Electrónico es patognomónico de la GNPE?",
+        "opciones": [
+          "Grandes depósitos electrón-densos en forma de 'jorobas' o humps localizados en la vertiente subepitelial de la MBG",
+          "Depósitos intramembranosos continuos en cinta de 10 nm",
+          "Fibrillas no amiloides en el mesangio de 30 nm",
+          "Inclusiones tubulorreticulares endoteliales"
+        ],
+        "indiceCorrecto": 0,
+        "explicacion": "Fuente: examen_glomerulo_RESP.pdf (Examen 1, Pregunta 18) y Glomerulonefritis aguda postestreptocócica.docx. La ME en la GNPE demuestra los característicos 'humps' o jorobas subepiteliales compuestas por el antígeno SPEB, C3 e IgG.",
+        "categoria": "Examen Modelo Residencia - GNPE"
+      },
+      {
+        "pregunta": "En la evaluación serológica de un niño con sospecha de GNPE, ¿cuál es el comportamiento del sistema del complemento en el 90% de los casos agudos?",
+        "opciones": [
+          "Descenso marcado de C3 plasmático con C4 normal o levemente reducido, mediado por activación de la Vía Alternativa",
+          "Consumo exclusivo de C4 con C3 elevado",
+          "Complemento C3 y C4 permanentemente normales",
+          "Caída de C1q aislado con C3 normal"
+        ],
+        "indiceCorrecto": 0,
+        "explicacion": "Fuente: examen_glomerulo_RESP.pdf (Examen 1, Pregunta 19) y Glomerulonefritis aguda postestreptocócica.docx. En la GNPE el 90% de los niños presenta consumo de C3 por activación de la vía alternativa con valores normales de C4.",
+        "categoria": "Examen Modelo Residencia - GNPE"
+      },
+      {
+        "pregunta": "¿Cuál es el tiempo límite esperado para la normalización del complemento C3 en el seguimiento de una GNPE sin complicaciones?",
+        "opciones": [
+          "Antes de las 8 a 12 semanas (2 a 3 meses) del inicio del cuadro",
+          "A las 48 horas de iniciado el tratamiento diurético",
+          "A los 2 años del episodio agudo",
+          "Nunca se normaliza, permanece bajo de por vida"
+        ],
+        "indiceCorrecto": 0,
+        "explicacion": "Fuente: examen_glomerulo_RESP.pdf (Examen 1, Pregunta 20) y Glomerulonefritis aguda postestreptocócica.docx. La persistencia de C3 bajo más allá de las 8 a 12 semanas es un criterio estricto de Biopsia Renal para descartar Glomerulopatía C3 o GNMP.",
+        "categoria": "Examen Modelo Residencia - GNPE"
+      },
+      {
+        "pregunta": "En la enfermedad por anticuerpos anti-Membrana Basal Glomerular (anti-MBG), ¿cuál es la subclase principal de IgG implicada en los depósitos lineales?",
+        "opciones": [
+          "IgG1 e IgG3",
+          "IgG4 pura",
+          "IgM pentamérica",
+          "IgA2 secretora"
+        ],
+        "indiceCorrecto": 0,
+        "explicacion": "Fuente: examen_glomerulo_RESP.pdf (Examen 1, Pregunta 21) y GPC3.docx. Los autoanticuerpos anti-MBG dirigidos contra el dominio NC1 de la cadena α3 del Colágeno IV pertenecen predominantemente a las subclases fijadoras de complemento IgG1 e IgG3.",
+        "categoria": "Examen Modelo Residencia - Glomerulopatías Extracapilares"
+      },
+      {
+        "pregunta": "En un paciente con Hemorragia Alveolar Difusa y Glomerulonefritis Extracapilar, la presencia simultánea de anticuerpos anti-MBG y ANCA (doble positividad) se asocia clinically a:",
+        "opciones": [
+          "Mayor tasa de recaídas y necesidad de mantenimiento prolongado como en las vasculitis ANCA puras",
+          "Curación espontánea sin necesidad de inmunosupresión",
+          "Afectación exclusiva de la glándula tiroides",
+          "Ausencia de compromiso de la función renal"
+        ],
+        "indiceCorrecto": 0,
+        "explicacion": "Fuente: examen_glomerulo_RESP.pdf (Examen 1, Pregunta 22) y VASCULITIS.docx. Los pacientes 'doble positivos' (Anti-MBG + ANCA) tienen la severidad inicial agresiva del anti-MBG pero la tendencia a recaer a largo plazo propia de la vasculitis ANCA, requiriendo terapia de mantenimiento.",
+        "categoria": "Examen Modelo Residencia - Vasculitis"
+      },
+      {
+        "pregunta": "En la Crioglobulinemia Mixta Tipo 2 asociada al Virus de la Hepatitis C, ¿cuál es la manifestación histológica renal MÁS FRECUENTE?",
+        "opciones": [
+          "Glomerulonefritis Membranoproliferativa (GNMP) con pseudotrombos intraluminales",
+          "Enfermedad de Cambios Mínimos pura",
+          "Esclerosis nodular de Kimmelstiel-Wilson",
+          "Nefritis tubulointersticial eosinofílica aislada"
+        ],
+        "indiceCorrecto": 0,
+        "explicacion": "Fuente: examen_glomerulo_RESP.pdf (Examen 1, Pregunta 23) y ARTRITIS REUMATOLOGICA Y ESCLERODERMIA.docx. La crioglobulinemia tipo 2 causa en el riñón un patrón de GNMP con dobles contornos, hipercelularidad endocapilar y 'pseudotrombos' intraglomerulares de crioglobulinas.",
+        "categoria": "Examen Modelo Residencia - Enfermedades Autoinmunes"
+      },
+      {
+        "pregunta": "¿Qué hallazgo al Microscopio Electrónico permite confirmar el diagnóstico de Crioglobulinemia Renal frente a otras glomerulopatías fibrilares?",
+        "opciones": [
+          "Depósitos de microtúbulos organizados en anillos o cilindros de 30 nm de diámetro",
+          "Fibrillas amiloides de 8 a 10 nm Rojo Congo positivas",
+          "Borramiento pedicelar completo sin depósitos",
+          "Laminación de la lámina densa de la MBG"
+        ],
+        "indiceCorrecto": 0,
+        "explicacion": "Fuente: examen_glomerulo_RESP.pdf (Examen 1, Pregunta 24) y ARTRITIS REUMATOLOGICA Y ESCLERODERMIA.docx. En la crioglobulinemia, la ME muestra depósitos subendoteliales organizados con estructura microtubular o cilindros de 30 nm característicos.",
+        "categoria": "Examen Modelo Residencia - Enfermedades Autoinmunes"
+      },
+      {
+        "pregunta": "En la Amiloidosis Renal, ¿cuál es la coloración histoquímica estándar y la propiedad óptica bajo luz polarizada que confirman el diagnóstico?",
+        "opciones": [
+          "Tinción de Rojo Congo con birrefringencia verde manzana bajo luz polarizada",
+          "Tinción de PAS con birrefringencia azul cobalto",
+          "Tinción de Grocott con fluorescencia ultravioleta",
+          "Plata metenamina con birrefringencia dorada"
+        ],
+        "indiceCorrecto": 0,
+        "explicacion": "Fuente: examen_glomerulo_RESP.pdf (Examen 1, Pregunta 25) y DISCRASIAS DE CELULAS PLASMATICAS.docx. El amiloide se diagnostica al teñirse con Rojo Congo y demostrar la patognomónica birrefringencia verde manzana al ser examinado bajo luz polarizada.",
+        "categoria": "Examen Modelo Residencia - Amiloidosis"
+      },
+      {
+        "pregunta": "En la Amiloidosis AA (secundaria), ¿cuál es la proteína precursor circulante sintetizada por el hígado durante estados inflamatorios crónicos?",
+        "opciones": [
+          "Proteína Sérica Amiloide A (SAA)",
+          "Cadena liviana Lambda monoclonal",
+          "Transtiretina mutada (TTR)",
+          "Beta-2 microglobulina"
+        ],
+        "indiceCorrecto": 0,
+        "explicacion": "Fuente: examen_glomerulo_RESP.pdf (Examen 1, Pregunta 26) y ARTRITIS REUMATOLOGICA Y ESCLERODERMIA.docx. La Amiloidosis AA es causada por el depósito de fibrillas derivadas del clivaje de la SAA, reactante de fase aguda hepático estimulado por IL-1, IL-6 y TNF-α.",
+        "categoria": "Examen Modelo Residencia - Amiloidosis"
+      },
+      {
+        "pregunta": "En la Enfermedad por Depósito de Cadenas Livianas (EDCL) monotípica, ¿cuál es la relación de frecuencia entre la cadena Kappa y Lambda?",
+        "opciones": [
+          "Predominio claro de la cadena Kappa (relación Kappa:Lambda 3:1)",
+          "Predominio masivo de la cadena Lambda (>90%)",
+          "Relación igualitaria 1:1 en todos los casos",
+          "Exclusividad de la cadena pesada IgM"
+        ],
+        "indiceCorrecto": 0,
+        "explicacion": "Fuente: examen_glomerulo_RESP.pdf (Examen 1, Pregunta 27) y DISCRASIAS DE CELULAS PLASMATICAS.docx. A diferencia de la Amiloidosis AL (donde predomina Lambda), en la EDCL la cadena monoclonal implicada es la Kappa en cerca del 80% de los casos.",
+        "categoria": "Examen Modelo Residencia - Discrasias Plasmáticas"
+      },
+      {
+        "pregunta": "Histatólogicamente, ¿qué patrón en Microscopía Óptica suele remedar la Enfermedad por Depósito de Cadenas Livianas (EDCL) en el glomérulo?",
+        "opciones": [
+          "Glomeruloesclerosis nodular similar a la Nefropatía Diabética (Kimmelstiel-Wilson)",
+          "Nefropatía de Cambios Mínimos pura",
+          "Glomerulonefritis extracapilar paucimune",
+          "Nefritis tubulointersticial granulomatosa"
+        ],
+        "indiceCorrecto": 0,
+        "explicacion": "Fuente: examen_glomerulo_RESP.pdf (Examen 1, Pregunta 28) y Gammapatias monoclonales.pptx. La EDCL produce expansión mesangial con nódulos PAS positivos acelulares que simulan la glomeruloesclerosis nodular diabética.",
+        "categoria": "Examen Modelo Residencia - Discrasias Plasmáticas"
+      },
+      {
+        "pregunta": "En la Nefropatía por Cilindros de Bence Jones (Mieloma Múltiple), ¿dónde precipitan las cadenas livianas y con qué sustancia interactúan?",
+        "opciones": [
+          "En la luz del túbulo distal y colector; co-precipitan con la mucoproteína de Tamm-Horsfall (uromodulina)",
+          "En el citoplasma del podocito; interactúan con la nefrina",
+          "En la arteriola aferente; interactúan con la renina",
+          "En la cápsula de Bowman; interactúan con el colágeno I"
+        ],
+        "indiceCorrecto": 0,
+        "explicacion": "Fuente: examen_glomerulo_RESP.pdf (Examen 1, Pregunta 29) y DISCRASIAS DE CELULAS PLASMATICAS.docx. Las cadenas livianas filtradas co-precipitan en el túbulo distal con la proteína de Tamm-Horsfall formando cilindros eosinófilos rígidos y obstructivos.",
+        "categoria": "Examen Modelo Residencia - Discrasias Plasmáticas"
+      },
+      {
+        "pregunta": "¿Por qué la tira reactiva de orina convencional (Dipstick) suele ser negativa o trazas en la Nefropatía por Cilindros de Bence Jones?",
+        "opciones": [
+          "Porque el Dipstick detecta específicamente Albúmina por error proteico de indicadores y no detecta las cadenas livianas libres",
+          "Porque las cadenas livianas son destruidas por el reactivo del labstix",
+          "Porque la orina de mieloma es extremadamente alcalina",
+          "Porque las cadenas livianas no se excretan por orina"
+        ],
+        "indiceCorrecto": 0,
+        "explicacion": "Fuente: examen_glomerulo_RESP.pdf (Examen 1, Pregunta 30) y DISCRASIAS DE CELULAS PLASMATICAS.docx. La tira reactiva da falso negativo para proteinuria masiva en mieloma porque reacciona solo con albúmina, requiriéndose sulfosalícico o uroproteinograma.",
+        "categoria": "Examen Modelo Residencia - Discrasias Plasmáticas"
+      },
+      {
+        "pregunta": "En la Vasculitis Granulomatosa con Poliangeítis (GPA / Wegener), ¿cuál es el anticuerpo ANCA y la diana antigénica predominantes?",
+        "opciones": [
+          "c-ANCA (patrón citoplasmático) dirigido contra la Proteinasa 3 (PR3)",
+          "p-ANCA (patrón perinuclear) dirigido contra la Mieloperoxidasa (MPO)",
+          "ANCA dirigido contra la lactoferrina",
+          "ANCA dirigido contra la catepsina G"
+        ],
+        "indiceCorrecto": 0,
+        "explicacion": "Fuente: examen_glomerulo_RESP.pdf (Examen 1, Pregunta 31) y VASCULITIS.docx. La GPA se asocia en >85% de los casos a c-ANCA dirigido contra PR3 en los gránulos azurófilos de neutrófilos.",
+        "categoria": "Examen Modelo Residencia - Vasculitis"
+      },
+      {
+        "pregunta": "En la Poliangeítis Microscópica (MPA), ¿cuál es el patrón de ANCA y el antígeno target característicos?",
+        "opciones": [
+          "p-ANCA con tinción perinuclear dirigido contra la Mieloperoxidasa (MPO)",
+          "c-ANCA contra Proteinasa 3 (PR3)",
+          "Anti-DNA nativo de doble cadena",
+          "Anti-PLA2R IgG4"
+        ],
+        "indiceCorrecto": 0,
+        "explicacion": "Fuente: examen_glomerulo_RESP.pdf (Examen 1, Pregunta 32) y VASCULITIS.docx. La MPA se vincula predominantemente a p-ANCA contra MPO, desencadenando glomerulonefritis necrotizante extracapilar paucinmune.",
+        "categoria": "Examen Modelo Residencia - Vasculitis"
+      },
+      {
+        "pregunta": "En la Crisis Renal Esclerodérmica (CRE), ¿cuál es el pilar fisiopatológico responsable de la hipertensión maligna y la falla renal?",
+        "opciones": [
+          "Isquemia renal severa por remodelado vascular miointimal que induce secreción masiva de Renina por el aparato yuxtaglomerular",
+          "Pérdida tubular de sodio con hipovolemia extrema",
+          "Depósito de complejos inmunes C1q en la arteria renal",
+          "Destrucción podocitaria mediada por toxina Shiga"
+        ],
+        "indiceCorrecto": 0,
+        "explicacion": "Fuente: examen_glomerulo_RESP.pdf (Examen 1, Pregunta 33) y ARTRITIS REUMATOLOGICA Y ESCLERODERMIA.docx. La proliferación miointimal en cebolla ocluye las arterias renales produciendo isquemia que dispara la renina a niveles astronómicos.",
+        "categoria": "Examen Modelo Residencia - Esclerodermia"
+      },
+      {
+        "pregunta": "¿Cuál es el tratamiento farmacológico de elección en la Crisis Renal Esclerodérmica que modificó la supervivencia de los pacientes?",
+        "opciones": [
+          "Inhibidores de la Enzima Convertidora de Angiotensina (IECA)",
+          "Glucocorticoides en pulsos de 1 gramo",
+          "Ciclosporina A a dosis altas",
+          "Diuréticos tiazídicos en monoterapia"
+        ],
+        "indiceCorrecto": 0,
+        "explicacion": "Fuente: examen_glomerulo_RESP.pdf (Examen 1, Pregunta 34) y ARTRITIS REUMATOLOGICA Y ESCLERODERMIA.docx. Los IECA (captopril/enalapril) revierten la vasoconstricción mediada por Angiotensina II y son el único tratamiento efectivo en la CRE.",
+        "categoria": "Examen Modelo Residencia - Esclerodermia"
+      },
+      {
+        "pregunta": "En las Microangiopatías Trombóticas (MAT), ¿cuál es la tríada clínica e higrométrica definitoria?",
+        "opciones": [
+          "Anemia hemolítica microangiopática (con esquistocitos), Trombocitopenia y Isquemia/daño de órgano blanco (predominantemente renal)",
+          "Leucocitosis, hipercalcemia y proteinuria nefrótica",
+          "Hematuria macroscópica, fiebre e ictericia obstructiva",
+          "Pancitopenia, esplenomegalia y soplo carotídeo"
+        ],
+        "indiceCorrecto": 0,
+        "explicacion": "Fuente: examen_glomerulo_RESP.pdf (Examen 1, Pregunta 35) y MAT (2).docx. La MAT se define biológicamente por anemia hemolítica Coombs negativa con esquistocitos, plaquetopenia y daño isquémico microvascular.",
+        "categoria": "Examen Modelo Residencia - MAT"
+      },
+      {
+        "pregunta": "En la Amiloidosis AL al Microscopio Electrónico, ¿cuáles son las dimensiones y disposición de las fibrillas amiloides?",
+        "opciones": [
+          "Fibrillas rígidas no ramificadas, dispuestas al azar, de 8 a 10 nm de diámetro",
+          "Microtúbulos huecos alineados de 40 a 50 nm",
+          "Fibrillas amiloides de 20 nm compuestas por colágeno I",
+          "Depósitos granulares subendoteliales sin fibrillas"
+        ],
+        "indiceCorrecto": 0,
+        "explicacion": "Fuente: examen_glomerulo_RESP.pdf (Examen 1, Pregunta 36). Las fibrillas amiloides en ME miden clásicamente entre 8 y 10 nm de diámetro, son rígidas, no ramificadas y están orientadas desorganizadamente.",
+        "categoria": "Examen Modelo Residencia - Amiloidosis"
+      },
+      {
+        "pregunta": "En el Síndrome Urémico Hemolítico Atípico (SUHa), ¿cuál es la causa patogénica subyacente en el 50-60% de los pacientes?",
+        "opciones": [
+          "Mutaciones o autoanticuerpos que condicionan pérdida de regulación de la Vía Alternativa del Complemento en la superficie endotelial",
+          "Infección entérica por E. coli O157:H7 productora de Shigatoxina",
+          "Deficiencia severa de la metaloproteasa ADAMTS13 (<10%)",
+          "Presencia de banda monoclonal IgM de Waldenström"
+        ],
+        "indiceCorrecto": 0,
+        "explicacion": "Fuente: examen_glomerulo_RESP.pdf (Examen 1, Pregunta 37) y SUH.docx. El SUHa se debe a mutaciones inarticuladas en genes de reguladores del complemento (Factor H, Factor I, MCP, C3, Factor B) que destruyen el endotelio.",
+        "categoria": "Examen Modelo Residencia - MAT"
+      },
+      {
+        "pregunta": "¿Por qué está contraindicado el uso de antibióticos en niños con diarrea sanguinolenta por E. coli productora de Shigatoxina (STEC)?",
+        "opciones": [
+          "Because inducen la lisis bacteriana masiva liberando la Shigatoxina a la luz colónica e incrementando el riesgo de desarrollar SUH",
+          "Because producen insuficiencia hepática aguda fulminante",
+          "Because neutralizan la acción terapéutica de la furosemida",
+          "Because causan aplasia medular reversible"
+        ],
+        "indiceCorrecto": 0,
+        "explicacion": "Fuente: examen_glomerulo_RESP.pdf (Examen 1, Pregunta 38) y SUH.pptx. Los antibióticos aumentan la liberación de Shigatoxina desde la bacteria E. coli estresada/lisada en el colon, aumentando la absorción sistémica y el SUH.",
+        "categoria": "Examen Modelo Residencia - MAT"
+      },
+      {
+        "pregunta": "En las lesiones ultraestructurales observadas en la Preeclampsia / HELLP, se encuentran todos los siguientes hallazgos, EXCEPTO:",
+        "opciones": [
+          "Tumefacción de células endoteliales (Endoteliosis)",
+          "Aumento del material electrón-lúcido en la lámina interna de la MBG",
+          "Fusión pedicelar focal de podocitos",
+          "Neoformación de la Membrana Basal Glomerular"
+        ],
+        "indiceCorrecto": 3,
+        "explicacion": "Fuente: examen_glomerulo_RESP.pdf (Examen 1, Pregunta 39) y PE, ECLAMPSIA, HELLP.docx. En la preeclampsia la lesión patognomónica es la endoteliosis glomerular con tumefacción endotelial, expansión subendotelial electrón-lúcida y fusión pedicelar focal, sin neoformación de MBG.",
+        "categoria": "Examen Modelo Residencia - Obstetricia y Riñón"
+      },
+      {
+        "pregunta": "En la Nefritis Lúpica Clase V (Membranosa), ¿cuál es la localización de los depósitos de inmunocomplejos?",
+        "opciones": [
+          "Subepiteliales continuos a lo largo de la pared capilar glomerular",
+          "Subendoteliales masivos en 'asa de alambre'",
+          "Exclusivamente mesangiales sin compromiso parietal",
+          "Intramembranosos continuos en cinta"
+        ],
+        "indiceCorrecto": 0,
+        "explicacion": "Fuente: examen_glomerulo_RESP.pdf (Examen 1, Pregunta 40) y Nefritis Lupica.pptx. La Nefritis Lúpica Clase V muestra depósitos subepiteliales granulares de inmunocomplejos (IgG, C3) idénticos a la nefropatía membranosa primaria.",
+        "categoria": "Examen Modelo Residencia - Nefritis Lúpica"
+      },
+      {
+        "pregunta": "¿Cuál es la magnitud de la proteinuria de 24 horas en un paciente con Nefropatía por IgA para indicar inicio formal de nefroprotección con IECA o ARA-II?",
+        "opciones": [
+          "Mayores a 0.2 g/24 horas",
+          "Mayores a 0.5 g/24 horas (o 500 mg/día)",
+          "Exclusivamente en proteinuria mayor a 3.5 g/24 horas",
+          "Únicamente si la creatinina es mayor a 2 mg/dl"
+        ],
+        "indiceCorrecto": 1,
+        "explicacion": "Fuente: examen_glomerulo_RESP.pdf (Examen 1, Pregunta 41) y NEFROPATIA CAMBIOS MINIMOS.docx. Las guías KDIGO y la literatura del examen establecen que ante una proteinuria mayor a 0.5 g/24h en Nefropatía por IgA, se debe iniciar optimización de bloqueo del SRAA con IECA o ARA-II.",
+        "categoria": "Examen Modelo Residencia - Glomerulopatías"
+      },
+      {
+        "pregunta": "En la Nefritis Lúpica, ¿cuál es la indicación de tratamiento de inducción para la Clase III o IV?",
+        "opciones": [
+          "Pulsos de Metilprednisolona seguidos de prednisona oral asociada a Micofenolato Mofetil o Ciclofosfamida",
+          "Monoterapia con aspirina a bajas dosis",
+          "Observación expectante sin fármacos",
+          "Inmunoglobulina intravenosa aislada cada 5 años"
+        ],
+        "indiceCorrecto": 0,
+        "explicacion": "Fuente: examen_glomerulo_RESP.pdf (Examen 1, Pregunta 42) y nefritis lupica 1.docx. La nefritis lúpica proliferativa (Clase III/IV) requiere inducción agresiva con altas dosis de corticoides y un inmunosupresor potente (MFM o ciclofosfamida).",
+        "categoria": "Examen Modelo Residencia - Nefritis Lúpica"
+      },
+      {
+        "pregunta": "En la Enfermedad de la Membrana Basal Fina (Basalopatía), ¿cuál es el espesor de la MBG al Microscopio Electrónico que confirma el diagnóstico?",
+        "opciones": [
+          "Adelgazamiento difuso con espesor menor a 250 nanómetros (nm)",
+          "Engrosamiento mayor a 1000 nm",
+          "Espesor normal de 350-400 nm con espículas",
+          "Ausencia completa de membrana basal"
+        ],
+        "indiceCorrecto": 0,
+        "explicacion": "Fuente: examen_glomerulo_RESP.pdf (Examen 1, Pregunta 43) y NEFROPATIA CAMBIOS MINIMOS.docx. La basalopatía fina se diagnostica al ME por un adelgazamiento armónico de la lámina densa de la MBG (<250 nm).",
+        "categoria": "Examen Modelo Residencia - Glomerulopatías Hereditarias"
+      },
+      {
+        "pregunta": "En el Síndrome de Alport (nefritis hereditaria), ¿cuáles son las manifestaciones extrarenales clásicas?",
+        "opciones": [
+          "Hipoacusia neurosensorial bilateral y alteraciones oculares (lenticono anterior, máculas retinianas)",
+          "Sordera de conducción pura y cataratas congénitas",
+          "Cardiopatía hipertrófica y alopecia",
+          "Uveítis granulomatosa y eritema nodoso"
+        ],
+        "indiceCorrecto": 0,
+        "explicacion": "Fuente: examen_glomerulo_RESP.pdf (Examen 1, Pregunta 44) y Comparto 'Alport uba' contigo.pptx. El Alport cursa con sordera neurosensorial progresiva y lenticono anterior por compromiso del colágeno IV en la cóclea y cristalino.",
+        "categoria": "Examen Modelo Residencia - Glomerulopatías Hereditarias"
+      },
+      {
+        "pregunta": "En la Glomerulonefritis Fibrilar, ¿cuál es el diámetro de las fibrillas al ME y su comportamiento frente a la tinción de Rojo Congo?",
+        "opciones": [
+          "Fibrillas no amiloides desorganizadas de 16 a 24 nm de diámetro; Rojo Congo negativas",
+          "Fibrillas amiloides de 8 a 10 nm; Rojo Congo positivas",
+          "Microtúbulos alineados de 50 nm; Rojo Congo positivas",
+          "Fibrillas de colágeno de 100 nm; Rojo Congo negativas"
+        ],
+        "indiceCorrecto": 0,
+        "explicacion": "Fuente: examen_glomerulo_RESP.pdf (Examen 1, Pregunta 45) y NEFROPATIA CAMBIOS MINIMOS.docx. La GN Fibrilar presenta fibrillas del doble del tamaño del amiloide (16-24 nm) y es característicamente Rojo Congo negativa.",
+        "categoria": "Examen Modelo Residencia - Glomerulopatías"
+      },
+      {
+        "pregunta": "¿Qué biomarcador inmunohistoquímico es altamente específico para el diagnóstico de Glomerulonefritis Fibrilar?",
+        "opciones": [
+          "DNAJB9",
+          "PLA2R",
+          "THSD7A",
+          "C3NF"
+        ],
+        "indiceCorrecto": 0,
+        "explicacion": "Fuente: examen_glomerulo_RESP.pdf (Examen 1, Pregunta 46) y NEFROPATIA CAMBIOS MINIMOS.docx. La tinción de la proteína DNAJB9 es positiva en casi el 100% de las GN Fibrilares y negativa en amiloidosis.",
+        "categoria": "Examen Modelo Residencia - Glomerulopatías"
+      },
+      {
+        "pregunta": "En la EGFS variante de la punta (Tip Variant), ¿cuál es el criterio histológico para su diagnóstico?",
+        "opciones": [
+          "Debe presentar al menos un glomérulo con lesión de esclerosis o adherencia adyacente al origen del túbulo contorneado proximal (polo urinario)",
+          "El 100% de los glomérulos deben presentar esclerosis perihiliar contigua a la arteriola aferente",
+          "Debe asociarse a proliferación extracapilar en más del 50% de los glomérulos",
+          "Presencia de trombos de fibrina e infiltrado eosinofílico masivo"
+        ],
+        "indiceCorrecto": 0,
+        "explicacion": "Fuente: examen_glomerulo_RESP.pdf (Examen 1, Pregunta 47) y primarias cambios minimos.pptx. La variante Tip se define por la presencia de al menos una lesión segmentaria de esclerosis/adherencia ubicada en la punta o polo urinario del glomérulo (contiguo al túbulo proximal).",
+        "categoria": "Examen Modelo Residencia - Glomerulopatías"
+      },
+      {
+        "pregunta": "En relación a la enfermedad por anticuerpos Anti-Membrana Basal Glomerular (Anti-MBG), señale la afirmación CORRECTA:",
+        "opciones": [
+          "Se caracteriza por anticuerpos dirigidos contra la cadena alfa-5 del colágeno IV",
+          "Se caracteriza por anticuerpos circulantes contra el dominio no colagenoso (NC1) de la cadena alfa-3 del Colágeno tipo IV, y muestra un patrón de IF lineal de IgG",
+          "Muestra un patrón granular en 'cielo estrellado' por C3 exclusivo",
+          "Es una enfermedad primaria infantil de herencia ligada al cromosoma X"
+        ],
+        "indiceCorrecto": 1,
+        "explicacion": "Fuente: examen_glomerulo_RESP.pdf (Examen 1, Pregunta 48). La enfermedad anti-MBG está causada por autoanticuerpos dirigidos contra el dominio NC1 de la cadena alfa-3 del Colágeno IV. En la IF es patognomónico el depósito lineal de IgG.",
+        "categoria": "Examen Modelo Residencia - Glomerulopatías Extracapilares"
+      },
+      {
+        "pregunta": "En un paciente con Síndrome Nefrótico por Glomerulopatía Membranosa primaria, ¿cuál es el autoanticuerpo sérico presente en el 70-80% de los casos?",
+        "opciones": [
+          "Anticuerpo anti-Receptor de la Fosfolipasa A2 (anti-PLA2R)",
+          "Anticuerpo anti-DNA de doble cadena",
+          "Anticuerpo anti-Mieloperoxidasa (ANCA MPO)",
+          "Anticuerpo anti-C1q"
+        ],
+        "indiceCorrecto": 0,
+        "explicacion": "Fuente: examen_glomerulo_RESP.pdf (Examen 1, Pregunta 49) y primarias cambios minimos.pptx. El autoanticuerpo anti-PLA2R (predominantemente IgG4) es el marcador biológico principal de la nefropatía membranosa primaria.",
+        "categoria": "Examen Modelo Residencia - Glomerulopatías"
+      },
+      {
+        "pregunta": "En la Nefritis Lúpica, ¿cuál es el porcentaje de glomérulos esclerosados globales que define a la Clase VI (Esclerosante Avanzada)?",
+        "opciones": [
+          "≥90% de los glomérulos esclerosados de forma global",
+          "≥50% de los glomérulos con semilunas celulares",
+          " Exactamente 10% de los glomérulos",
+          "Cualquier porcentaje siempre que la creatinina sea normal"
+        ],
+        "indiceCorrecto": 0,
+        "explicacion": "Fuente: examen_glomerulo_RESP.pdf (Examen 1, Pregunta 50) y Nefritis Lupica.pptx. La Clase VI representa el estadio cicatrizal terminal donde más del 90% de los glomérulos están globalmente esclerosados.",
+        "categoria": "Examen Modelo Residencia - Nefritis Lúpica"
+      },
+      {
+        "pregunta": "En el tratamiento de la Vasculitis ANCA asociada severa con insuficiencia renal aguda grave (creatinina >5.7 mg/dl) o Hemorragia Alveolar, ¿qué terapia coadyuvante está indicada?",
+        "opciones": [
+          "Plasmaféresis (PLEX) agregada a corticoides y ciclofosfamida/rituximab",
+          "Ciclosporina A aislada",
+          "Diálisis peritoneal continua ambulatoria en monoterapia",
+          "Anticonceptivos orales combinados"
+        ],
+        "indiceCorrecto": 0,
+        "explicacion": "Fuente: examen_glomerulo_RESP.pdf (Examen 1, Pregunta 51) y VASCULITIS.docx. La plasmaféresis está indicada en vasculitis ANCA fulminante con creatinina >5.7 mg/dl o hemorragia alveolar grave para remover anticuerpos circulantes.",
+        "categoria": "Examen Modelo Residencia - Vasculitis"
+      },
+      {
+        "pregunta": "En la Glomerulopatía C3 (GPC3), ¿cuál es el hallazgo patognomónico en la Inmunofluorescencia renal?",
+        "opciones": [
+          "Tinción dominante o exclusiva para C3 (al menos 2 órdenes de magnitud superior a cualquier inmunoglobulina)",
+          "Tinción 'Full House' para Igs y C1q",
+          "Tinción lineal continua para IgG",
+          "Inmunofluorescencia totalmente negativa"
+        ],
+        "indiceCorrecto": 0,
+        "explicacion": "Fuente: examen_glomerulo_RESP.pdf (Examen 1, Pregunta 52) y GPC3.docx. La GPC3 exige una tinción dominante de C3 sin depósitos significativos de inmunoglobulinas.",
+        "categoria": "Examen Modelo Residencia - Complemento"
+      },
+      {
+        "pregunta": "En la Enfermedad por Depósitos Densos (DDD), ¿cuál es el marcador serológico presente en el 80% de los pacientes que estabiliza la C3 convertasa de la vía alternativa?",
+        "opciones": [
+          "Factor Nefrítico C3 (C3NeF)",
+          "Anticuerpo anti-PLA2R",
+          "c-ANCA anti-PR3",
+          "Factor Nefrítico C4"
+        ],
+        "indiceCorrecto": 0,
+        "explicacion": "Fuente: examen_glomerulo_RESP.pdf (Examen 1, Pregunta 53) y GPC3.docx. El C3NeF es un autoanticuerpo IgG que se une a la C3 convertasa (C3bBb) de la vía alternativa impidiendo su degradación e induciendo consumo masivo de C3.",
+        "categoria": "Examen Modelo Residencia - Complemento"
+      },
+      {
+        "pregunta": "En un paciente con Lupus Eritematoso Sistémico y orina normal, la realización de una Biopsia Renal silente demuestra lesiones lúpicas proliferativas (Clase III/IV) en hasta un:",
+        "opciones": [
+          "15% de los pacientes",
+          "0%",
+          "80%",
+          "100%"
+        ],
+        "indiceCorrecto": 0,
+        "explicacion": "Fuente: examen_glomerulo_RESP.pdf (Examen 1, Pregunta 54) y nefritis lupica 1.docx. La 'Nefritis Lúpica Silente' demuestra que un 15% de pacientes lúpicos sin alteración urinaria presentan Clase III o IV activa en la biopsia.",
+        "categoria": "Examen Modelo Residencia - Nefritis Lúpica"
+      },
+      {
+        "pregunta": "En la Púrpura Trombocitopénica Trombótica (PTT), ¿cuál es el mecanismo fisiopatológico principal?",
+        "opciones": [
+          "Deficiencia severa idiopática o autoinmune (anticuerpos IgG) de la metaloproteasa ADAMTS13 (<10%)",
+          "Mutación en la proteína reguladora Factor H del complemento",
+          "Infección por E. coli productora de Shigatoxina",
+          "Depósito de cadenas livianas Kappa en las arteriolas"
+        ],
+        "indiceCorrecto": 0,
+        "explicacion": "Fuente: examen_glomerulo_RESP.pdf (Examen 1, Pregunta 55) y MAT (2).docx. La PTT se desencadena por la falta de ADAMTS13 (<10%), lo que impide escindir los multímeros ultragrandes del Factor de Von Willebrand.",
+        "categoria": "Examen Modelo Residencia - MAT"
+      },
+      {
+        "pregunta": "En la Preeclampsia, ¿cuál es la causa de la proteinuria y el edema según la teoría placentaria?",
+        "opciones": [
+          "Isquemia placentaria que libera factores antiangiogénicos (sFlt-1 y Soluble Endoglin) que capturan al VEGF y PGF provocando disfunción endotelial sistémica y glomerular",
+          "Infiltración leucocitaria con vasculitis necrotizante de la arteria uterina",
+          "Síntesis de anticuerpos monoclonales contra la albúmina",
+          "Pérdida primaria de glucosa por el SGLT2"
+        ],
+        "indiceCorrecto": 0,
+        "explicacion": "Fuente: examen_glomerulo_RESP.pdf (Examen 1, Pregunta 56) y PE, ECLAMPSIA, HELLP.docx. La placenta hipóxica secreta sFlt-1 que neutraliza el VEGF podocitario, destruyendo la fenestración endotelial glomerular e induciendo proteinuria y endoteliosis.",
+        "categoria": "Examen Modelo Residencia - Obstetricia y Riñón"
+      },
+      {
+        "pregunta": "En la Glomerulopatía C4 (GPC4), ¿cuáles son los hallazgos en la Inmunofluorescencia y laboratorio sérico?",
+        "opciones": [
+          "Tinción positiva para C4d por IF sin C3 ni Igs; con C4 sérico reducido y C3 normal",
+          "Tinción 'Full House' con C3 y C4 séricos normales",
+          "Tinción exclusiva para C3 con C3 sérico reducido y C4 normal",
+          "IF totalmente negativa con complemento normal"
+        ],
+        "indiceCorrecto": 0,
+        "explicacion": "Fuente: examen_glomerulo_RESP.pdf (Examen 1, Pregunta 57) y GPC3.docx. La GPC4 surge por desregulación de la vía de las lectinas, mostrando C4d en IF, consumo de C4 y C3 plasmático conservado.",
+        "categoria": "Examen Modelo Residencia - Complemento"
+      },
+      {
+        "pregunta": "En un paciente de 60 años con Glomerulopatía Membranosa secundaria a tumor sólido (carcinoma bronquogénico), ¿cuál es la característica de la Inmunofluorescencia renal?",
+        "opciones": [
+          "Tinción negativa para anti-PLA2R en los depósitos, con presencia de IgG1 e IgG2 (a diferencia del PLA2R+ e IgG4+ de la primaria)",
+          "Tinción fuertemente positiva para anti-PLA2R IgG4 en el 100% de los casos",
+          "Ausencia de depósitos de inmunoglobulinas",
+          "Presencia de trombos de fibrina puros"
+        ],
+        "indiceCorrecto": 0,
+        "explicacion": "Fuente: examen_glomerulo_RESP.pdf (Examen 1, Pregunta 58) y NEFROPATIA CAMBIOS MINIMOS.docx. La membranosa secundaria a cáncer es típicamente PLA2R negativa y tiñe para subclases IgG1/IgG2 en lugar de la IgG4 de la forma idiopática.",
+        "categoria": "Examen Modelo Residencia - Glomerulopatías"
+      },
+      {
+        "pregunta": "A qué antígeno podocitario humano NO corresponden los autoanticuerpos en la Glomerulopatía Membranosa primaria?",
+        "opciones": [
+          "Receptor de la Fosfolipasa A2 (PLA2R)",
+          "Trombospondina tipo 1 con dominio 7A (THSD7A)",
+          "Endopeptidasa neutra (NEP)",
+          "Megalina"
+        ],
+        "indiceCorrecto": 3,
+        "explicacion": "Fuente: examen_glomerulo_RESP.pdf (Examen 1, Pregunta 59). La Megalina es el antígeno en el modelo murino de Heymann, no un antígeno podocitario primario en la membranosa humana.",
+        "categoria": "Examen Modelo Residencia - Glomerulopatías"
+      },
+      {
+        "pregunta": "Una paciente con Nefritis Lúpica Clase IV en tratamiento con Micofenolato Mofetil y corticoides presenta una gestación confirmada de 6 semanas. ¿Cuál es la conducta terapéutica correcta?",
+        "opciones": [
+          "Mantener el Micofenolato Mofetil sin cambios por riesgo de brote lúpico",
+          "Suspender el Micofenolato Mofetil de inmediato por teratogenicidad y rotar a Azatioprina (AZA) manteniendo corticoides a dosis bajas",
+          "Indicar terapia de reemplazo renal profiláctica",
+          "Rotar a Ciclofosfamida oral en dosis altas"
+        ],
+        "indiceCorrecto": 1,
+        "explicacion": "Fuente: examen_glomerulo_RESP.pdf (Examen 1, Pregunta 60) y PE, ECLAMPSIA, HELLP.docx. El MFM es un teratógeno potente. Debe suspenderse ante el embarazo y reemplazarse por Azatioprina (fármaco seguro en gestación).",
+        "categoria": "Examen Modelo Residencia - Nefritis Lúpica"
+      },
+      {
+        "pregunta": "En el Mieloma Múltiple con nefropatía por cilindros, ¿cuál es el desencadenante agudo más frecuente de la falla renal?",
+        "opciones": [
+          "Deshidratación / deplesión de volumen asociada a hipercalcemia o uso de diuréticos",
+          "Glomerulonefritis extracapilar paucimune",
+          "Trombosis de la arteria renal hiliar",
+          "Infección por Parvovirus B19"
+        ],
+        "indiceCorrecto": 0,
+        "explicacion": "Fuente: examen_glomerulo_RESP.pdf (Examen 2, Pregunta 1) y DISCRASIAS DE CELULAS PLASMATICAS.docx. La deplesión de volumen e hipercalcemia concentran las cadenas de Bence Jones en el túbulo distal acelerando la precipitación con uromodulina.",
+        "categoria": "Examen Modelo Residencia - Discrasias Plasmáticas"
+      },
+      {
+        "pregunta": "¿Cuál es la causa de la proteinuria masiva en la Amiloidosis AL?",
+        "opciones": [
+          "Depósito de fibrillas amiloides no ramificadas de 8-10 nm en el mesangio y pared capilar glomerular con desestructuración del diafragma de hendidura",
+          "Infiltración de neutrófilos en los túbulos colectores",
+          "Trombosis de las venas interlobulillares",
+          "Deficiencia de la metaloproteasa ADAMTS13"
+        ],
+        "indiceCorrecto": 0,
+        "explicacion": "Fuente: examen_glomerulo_RESP.pdf (Examen 2, Pregunta 2) y DISCRASIAS DE CELULAS PLASMATICAS.docx. El depósito de amiloide en la pared capilar destruye la arquitectura podocitaria y la MBG, provocando proteinuria nefrótica masiva.",
+        "categoria": "Examen Modelo Residencia - Amiloidosis"
+      },
+      {
+        "pregunta": "En la Macroglobulinemia de Waldenström, ¿cuál es la complicación glomerular característica causada por el componente M?",
+        "opciones": [
+          "Formación de pseudotrombos o trombos hialinos intraglomerulares de IgM por hiperviscosidad",
+          "Basalopatía fina con hematuria aislada",
+          "Jorobas subepiteliales de exotoxina B",
+          "Inclusiones de oro en células tubulares"
+        ],
+        "indiceCorrecto": 0,
+        "explicacion": "Fuente: examen_glomerulo_RESP.pdf (Examen 2, Pregunta 3) y Gammapatias monoclonales.pptx. La IgM pentamérica de Waldenström ocluye las luces capilares formando trombos hialinos masivos por viscosidad.",
+        "categoria": "Examen Modelo Residencia - Discrasias Plasmáticas"
+      },
+      {
+        "pregunta": "En un paciente con Mieloma Múltiple tratado con Bisfosfonatos (Pamidronato EV), ¿qué podocitopatía secundaria puede desarrollarse?",
+        "opciones": [
+          "Esclerosis Glomerular Focal y Segmentaria (EGFS) variante Colapsante",
+          "Glomerulopatía Membranosa por anti-PLA2R",
+          "Nefropatía por IgA mesangial",
+          "Glomerulopatía C3 por C3NeF"
+        ],
+        "indiceCorrecto": 0,
+        "explicacion": "Fuente: examen_glomerulo_RESP.pdf (Examen 2, Pregunta 4) y DISCRASIAS DE CELULAS PLASMATICAS.docx. El pamidronato a dosis elevadas es una causa farmacológica clásica de EGFS colapsante con falla renal rápida.",
+        "categoria": "Examen Modelo Residencia - Discrasias Plasmáticas"
+      },
+      {
+        "pregunta": "En la evaluación diagnóstica de las Vasculitis ANCA asociadas, la presencia de granulomas necrotizantes en la biopsia de vía aérea superior apoya el diagnóstico de:",
+        "opciones": [
+          "Granulomatosis con Poliangeítis (GPA / Wegener)",
+          "Poliangeítis Microscópica (MPA)",
+          "Síndrome de Goodpasture",
+          "Púrpura de Schönlein-Henoch"
+        ],
+        "indiceCorrecto": 0,
+        "explicacion": "Fuente: examen_glomerulo_RESP.pdf (Examen 2, Pregunta 5) y VASCULITIS.docx. La GPA se caracteriza por la inflamación granulomatosa necrotizante del tracto respiratorio superior e inferior combinada con vasculitis sistémica.",
+        "categoria": "Examen Modelo Residencia - Vasculitis"
+      },
+      {
+        "pregunta": "¿Cuál es la complicación nefrológica de la Artritis Reumatoidea de larga evolución no controlada?",
+        "opciones": [
+          "Amiloidosis AA (secundaria)",
+          "Amiloidosis AL por cadena Lambda",
+          "Nefropatía C3 pura",
+          "Enfermedad de Alport X-linked"
+        ],
+        "indiceCorrecto": 0,
+        "explicacion": "Fuente: examen_glomerulo_RESP.pdf (Examen 2, Pregunta 6) y ARTRITIS REUMATOLOGICA Y ESCLERODERMIA.docx. La inflamación sinovial crónica estimula la producción hepática de SAA, derivando en Amiloidosis AA a los 15-20 años de enfermedad.",
+        "categoria": "Examen Modelo Residencia - Esclerodermia"
+      },
+      {
+        "pregunta": "En las lesiones renales causadas por el uso de Sales de Oro en Artritis Reumatoidea, el hallazgo ultrastructural en células tubulares es:",
+        "opciones": [
+          "Aurosomas (inclusiones metálicas electrón-densas en citoplasma tubular)",
+          "Inclusiones tubulorreticulares por interferón",
+          "Fibrillas amiloides de 8 nm",
+          "Cristales romboidales de cistina"
+        ],
+        "indiceCorrecto": 0,
+        "explicacion": "Fuente: examen_glomerulo_RESP.pdf (Examen 2, Pregunta 7) y ARTRITIS REUMATOLOGICA Y ESCLERODERMIA.docx. Las sales de oro originan inclusiones pigmentadas electrón-densas llamadas Aurosomas en los lisosomas tubulares proximales.",
+        "categoria": "Examen Modelo Residencia - Esclerodermia"
+      },
+      {
+        "pregunta": "En las vasculitis de pequeños vasos ANCA positivas, ¿cuál es el factor determinante independiente de la función renal a largo plazo?",
+        "opciones": [
+          "El nivel de Creatinina sérica al momento del diagnóstico",
+          "El título de c-ANCA",
+          "La edad pediátrica",
+          "La velocidad de sedimentación globular"
+        ],
+        "indiceCorrecto": 0,
+        "explicacion": "Fuente: examen_glomerulo_RESP.pdf (Examen 2, Pregunta 8) y VASCULITIS.docx. La creatinina sérica inicial refleja el grado de daño nefronal agudo y predice la supervivencia renal a largo plazo.",
+        "categoria": "Examen Modelo Residencia - Vasculitis"
+      },
+      {
+        "pregunta": "En la Preeclampsia severa, ¿cuál es el indicador de laboratorio que refleja la disfunción endotelial e hipoxia tisular grave?",
+        "opciones": [
+          "Elevación del Ácido Úrico sérico e incremento de la relación sFlt-1 / PlGF",
+          "Caída de la bilirrubina indirecta",
+          "Aumento del complemento C3",
+          "Disminución de la proteinuria de 24 horas"
+        ],
+        "indiceCorrecto": 0,
+        "explicacion": "Fuente: examen_glomerulo_RESP.pdf (Examen 2, Pregunta 9) y PE, ECLAMPSIA, HELLP.docx. La hiperuricemia por caída del aclaramiento tubular de urato y el ratio sFlt-1/PlGF elevado certifican la isquemia placentaria y preeclampsia.",
+        "categoria": "Examen Modelo Residencia - Obstetricia y Riñón"
+      },
+      {
+        "pregunta": "En la Amiloidosis AL por discrasia de células plasmáticas, ¿cuál es la cadena liviana producida monoclonante en más del 70% de los pacientes?",
+        "opciones": [
+          "Cadena liviana Kappa",
+          "Cadena liviana Lambda",
+          "Cadena pesada Gamma 1",
+          "Cadena pesada Alfa 2"
+        ],
+        "indiceCorrecto": 1,
+        "explicacion": "Fuente: examen_glomerulo_RESP.pdf (Examen 2, Pregunta 10) y DISCRASIAS DE CELULAS PLASMATICAS.docx. En la Amiloidosis AL el clon plasmocitario sintetiza predominantemente la cadena liviana Lambda.",
+        "categoria": "Examen Modelo Residencia - Discrasias Plasmáticas"
+      },
+      {
+        "pregunta": "En relación a la Glomerulopatía C4 (GPC4), señale la afirmación CORRECTA sobre su patogenia y laboratorio:",
+        "opciones": [
+          "Está mediada por activación descontrolada de la Vía de las Lectinas del complemento, mostrando C4d en la IF, C3 normal y C4 reducido en suero",
+          "Se caracteriza por anticuerpos monoclonales IgG4 anti-PLA2R con C3 bajo y C4 normal",
+          "Presenta depósitos subepiteliales de cadenas pesadas IgM en la microscopía electrónica",
+          "Es una podocitopatía primaria corticosensible sin consumo de complemento"
+        ],
+        "indiceCorrecto": 0,
+        "explicacion": "Fuente: examen_glomerulo_RESP.pdf (Examen 2, Pregunta 11) y GPC3.docx. La GPC4 surge por alteración en la vía de las lectinas, con depósito de C4d e hipocomplementemia C4 aislada.",
+        "categoria": "Examen Modelo Residencia - Complemento"
+      },
+      {
+        "pregunta": "¿Cuál es la causa de la Púrpura Trombocitopénica Trombótica (PTT) congénita o Síndrome de Upshaw-Schulman?",
+        "opciones": [
+          "Mutación homocigota o heterocigota compuesta en el gen ADAMTS13 con deficiencia constitutiva de la enzima",
+          "Infección intrauterina por Toxoplasma gondii",
+          "Depósito de IgA1 en las arteriolas renales",
+          "Uso maternal de IECA en el primer trimestre"
+        ],
+        "indiceCorrecto": 0,
+        "explicacion": "Fuente: examen_glomerulo_RESP.pdf (Examen 2, Pregunta 12) y MAT (2).docx. El síndrome de Upshaw-Schulman es la variante hereditaria de PTT por mutaciones inactivantes en ADAMTS13.",
+        "categoria": "Examen Modelo Residencia - MAT"
+      },
+      {
+        "pregunta": "En la variante esclerosante Colapsante de la EGFS, ¿cuál es el cambio histológico característico?",
+        "opciones": [
+          "Colapso global o segmentario del ovillo capilar con hiperplasia e hipertrofia del epitelio visceral (podocitos)",
+          "Infiltrado masivo de eosinófilos en el intersticio",
+          "Espículas subepiteliales de colágeno IV",
+          "Trombos de amiloide en la arteriola eferente"
+        ],
+        "indiceCorrecto": 0,
+        "explicacion": "Fuente: examen_glomerulo_RESP.pdf (Examen 2, Pregunta 13). La EGFS colapsante muestra arrugamiento/colapso de las paredes capilares con 'pseudosemilunas' podocitarias prominentes.",
+        "categoria": "Examen Modelo Residencia - Glomerulopatías"
+      },
+      {
+        "pregunta": "En un paciente con Nefritis Lúpica y trombosis venosa profunda recurrentes, la presencia de Anticuerpos Antifosfolípidos (aPL) e Inmunofluorescencia sin depósitos en arteriolas orienta a:",
+        "opciones": [
+          "Microangiopatía Trombótica asociada al Síndrome Antifosfolípido (MAT-SAF)",
+          "Podocitopatía Lúpica pura",
+          "Glomerulonefritis membranosa primaria anti-PLA2R",
+          "Nefropatía por Cambios Mínimos"
+        ],
+        "indiceCorrecto": 0,
+        "explicacion": "Fuente: examen_glomerulo_RESP.pdf (Examen 2, Pregunta 14) y nefritis lupica 1.docx. Las lesiones vasculares por aPL en lupus producen trombos de fibrina intravascular (MAT-SAF) con IF negativa para inmunocomplejos en el trombo.",
+        "categoria": "Examen Modelo Residencia - Nefritis Lúpica"
+      },
+      {
+        "pregunta": "En el tratamiento del Síndrome Urémico Hemolítico Atípico (SUHa), ¿cuál es el anticuerpo monoclonal de elección dirigido contra C5?",
+        "opciones": [
+          "Eculizumab (o Ravulizumab)",
+          "Rituximab",
+          "Infliximab",
+          "Belimumab"
+        ],
+        "indiceCorrecto": 0,
+        "explicacion": "Fuente: examen_glomerulo_RESP.pdf (Examen 2, Pregunta 15) y MICROANGIOPATIA TROMBOTICA.pptx. Eculizumab se une a la proteína C5 bloqueando su clivaje a C5a y C5b, impidiendo la formación del complejo de ataque de membrana C5b-9.",
+        "categoria": "Examen Modelo Residencia - MAT"
+      },
+      {
+        "pregunta": "En la Nefritis Lúpica Clase II (Mesangial Proliferativa), ¿cuáles son los hallazgos al Microscopio Óptico?",
+        "opciones": [
+          "Hipercelularidad mesangial pura de cualquier grado o expansión de la matriz mesangial al MO, sin depósitos parietales subendoteliales ni subepiteliales",
+          "Glomérulos enteramente normales al MO",
+          "Semilunas celulares en el 80% de los glomérulos",
+          "Trombos hialinos masivos en asa de alambre"
+        ],
+        "indiceCorrecto": 0,
+        "explicacion": "Fuente: examen_glomerulo_RESP.pdf (Examen 2, Pregunta 16) y Nefritis Lupica.pptx. La Clase II lúpica se define por hipercelularidad mesangial en MO e depósitos mesangiales por IF, sin compromiso capilar periférico.",
+        "categoria": "Examen Modelo Residencia - Nefritis Lúpica"
+      },
+      {
+        "pregunta": "En la clasificación de la Nefropatía por IgA, ¿cuál de los siguientes parámetros del MEST-C se asocia a mayor riesgo de progresión independientemente del tratamiento?",
+        "opciones": [
+          "T (Atrofia tubular / Fibrosis intersticial) mayor al 25-50%",
+          "M1 aislado sin proteinuria",
+          "Presencia de 1 neutrófilo intracapilar",
+          "Glomerulomegalia perihiliar aislada"
+        ],
+        "indiceCorrecto": 0,
+        "explicacion": "Fuente: examen_glomerulo_RESP.pdf (Examen 2, Pregunta 17) y NEFROPATIA CAMBIOS MINIMOS.docx. El grado de fibrosis tubulointersticial y atrofia tubular (T1 o T2 en el MEST-C) es el marcador histológico más fuerte de insuficiencia renal irreversible.",
+        "categoria": "Examen Modelo Residencia - Glomerulopatías"
+      },
+      {
+        "pregunta": "En la Enfermedad de Cambios Mínimos corticosensible, ¿cuál es el tiempo promedio esperado para lograr la remisión completa tras iniciar esteroides a 1 mg/kg/día en niños?",
+        "opciones": [
+          "2 a 4 semanas (más del 90% remite antes de las 4 semanas)",
+          "6 a 12 meses",
+          "24 horas exactas",
+          "5 años de tratamiento ininterrumpido"
+        ],
+        "indiceCorrecto": 0,
+        "explicacion": "Fuente: examen_glomerulo_RESP.pdf (Examen 2, Pregunta 18) y NEFROPATIA CAMBIOS MINIMOS.docx. La mayoría de los niños corticosensibles logra la negativización de la proteinuria dentro de las primeras 2 a 4 semanas de prednisona.",
+        "categoria": "Examen Modelo Residencia - Glomerulopatías"
+      },
+      {
+        "pregunta": "En la reclasificación de las Glomerulonefritis Membranoproliferativas, las formas causadas por crioglobulinemia o VHC corresponden a:",
+        "opciones": [
+          "GNMP mediada por Inmunocomplejos (IF positiva para Ig e inmunocomplejos)",
+          "Glomerulopatía C3 pura (IF C3 aislado)",
+          "Enfermedad por Depósitos Densos (DDD)",
+          "Podocitopatía primaria corticoresistente"
+        ],
+        "indiceCorrecto": 0,
+        "explicacion": "Fuente: examen_glomerulo_RESP.pdf (Examen 2, Pregunta 19) y GPC3.docx. Las infecciones crónicas como VHC generan cryoglobulinas e inmunocomplejos que precipitan con IF positiva para Igs y complemento.",
+        "categoria": "Examen Modelo Residencia - Glomerulopatías"
+      },
+      {
+        "pregunta": "En el análisis del sedimento urinario por microscopía de contraste de fase, ¿cuál es el porcentaje de dismorfismo y acantocitos necesario para certificar origen glomerular?",
+        "opciones": [
+          "Al menos 80% de eritrocitos dismórficos y/o >5% a 10% de acantocitos (células G1)",
+          "10% de dismorfismo y sin acantocitos",
+          "100% de eritrocitos isomórficos con leucocituria neutrofílica",
+          "Presencia de 1 cilindro hialino por campo sin hematíes"
+        ],
+        "indiceCorrecto": 0,
+        "explicacion": "Fuente: examen_glomerulo_RESP.pdf (Examen 2, Pregunta 20) y primera clase.docx. Para diagnosticar hematuria glomerular se requiere un dismorfismo eritrocitario >80% y/o la presencia de más del 5-10% de acantocitos (hematíes en anillo con evaginaciones en 'orejas de Mickey Mouse').",
+        "categoria": "Examen Modelo Residencia - Diagnóstico Renal"
+      },
+      {
+        "pregunta": "En un paciente con Mieloma Múltiple e insuficiencia renal aguda, ¿cuál es la conducta inicial de reanimación metabólica para prevenir la precipitación de cilindros?",
+        "opciones": [
+          "Expansión hidroelectrolítica con Solución Fisiológica e hídrica agresiva junto a alcalinización urinaria y corrección de la hipercalcemia",
+          "Restricción hídrica estricta a 200 ml/día y furosemida a altas dosis",
+          "Nefrectomía bilateral de urgencia",
+          "Administración de dosis altas de pamidronato EV"
+        ],
+        "indiceCorrecto": 0,
+        "explicacion": "Fuente: examen_glomerulo_RESP.pdf (Examen 2, Pregunta 21) y DISCRASIAS DE CELULAS PLASMATICAS.docx. La hidratación parenteral masiva aumenta el flujo tubular diluyendo la concentración de cadenas livianas e impidiendo la precipitación de cilindros.",
+        "categoria": "Examen Modelo Residencia - Discrasias Plasmáticas"
+      },
+      {
+        "pregunta": "En el diagnóstico de la Amiloidosis AA secundaria a enfermedad inflamatoria crónica, la biopsia de grasa subcutánea periumbilical presenta una sensibilidad de:",
+        "opciones": [
+          "70% a 80% (siendo un procedimiento no invasivo previo a la biopsia renal)",
+          "100% constante",
+          "5%",
+          "0% (la grasa subcutánea nunca acumula amiloide)"
+        ],
+        "indiceCorrecto": 0,
+        "explicacion": "Fuente: examen_glomerulo_RESP.pdf (Examen 2, Pregunta 22) y DISCRASIAS DE CELULAS PLASMATICAS.docx. La aspiración de grasa abdominal teñida con Rojo Congo detecta depósitos amiloides en hasta un 80% evitando la PBR.",
+        "categoria": "Examen Modelo Residencia - Amiloidosis"
+      },
+      {
+        "pregunta": "En la Nefritis Lúpica, ¿cuál de los siguientes hallazgos en la PBR constituye un criterio de severidad que exige pulsos de esteroides e inmunosupresión de inducción inmediata?",
+        "opciones": [
+          "Presencia de necrosis fibrinoide, cariorrexis y/o semilunas celulares en más del 25-50% de los glomérulos",
+          "Presencia de 1 cilindro hialino en corteza",
+          "Fusión pedicelar focal del 5%",
+          "Espesor de la MBG de 200 nm"
+        ],
+        "indiceCorrecto": 0,
+        "explicacion": "Fuente: examen_glomerulo_RESP.pdf (Examen 2, Pregunta 23) y Nefritis Lupica.pptx. Las lesiones necrotizantes y crescénticas representan inflamación destructiva aguda que requiere inducción agresiva.",
+        "categoria": "Examen Modelo Residencia - Nefritis Lúpica"
+      },
+      {
+        "pregunta": "En el contexto de la Preeclampsia, ¿cuál es el síntoma premonitorio de Eclampsia que exige inicio inmediato de Sulfato de Magnesio?",
+        "opciones": [
+          "Cefalea intensa, epigastralgia en 'cinturón' y alteración visual (escotomas / fotopsias)",
+          "Pérdida del cabello aislada",
+          "Poliuria nocturna de 3 litros",
+          "Dolor articular en interfalángicas distales"
+        ],
+        "indiceCorrecto": 0,
+        "explicacion": "Fuente: examen_glomerulo_RESP.pdf (Examen 2, Pregunta 24) y PE, ECLAMPSIA Y HELLP.pptx. La cefalea severa persistente, síntomas visuales y epigastralgia indican irritación del sistema nervioso central e imminencia de convulsiones eclánticas.",
+        "categoria": "Examen Modelo Residencia - Obstetricia y Riñón"
+      },
+      {
+        "pregunta": "En la clasificación de Oxford (MEST-C) para la Nefropatía por IgA, ¿qué representa la letra 'S'?",
+        "opciones": [
+          "Semilunas celulares (Crescents)",
+          "Semilunas fibrosas",
+          "Esclerosis glomerular segmentaria (Segmental glomerulosclerosis)",
+          "Estenosis de arteriolas interlobulares"
+        ],
+        "indiceCorrecto": 2,
+        "explicacion": "Fuente: examen_glomerulo_RESP.pdf (Examen 2, Pregunta 25) y NEFROPATIA CAMBIOS MINIMOS.docx. El score MEST-C evalúa: M (hipercelularidad mesangial), E (proliferación endocapilar), S (esclerosis segmentaria), T (atrofia tubular/fibrosis) y C (semilunas).",
+        "categoria": "Examen Modelo Residencia - Glomerulopatías"
+      },
+      {
+        "pregunta": "¿En cuál de las siguientes patologías NO se encuentra anemia hemolítica microangiopática (MAHA) con esquistocitos?",
+        "opciones": [
+          "Púrpura Trombocitopénica Trombótica (PTT)",
+          "Síndrome Urémico Hemolítico Atípico (SUHa)",
+          "Síndrome Antifosfolípido Primario catastrófico",
+          "Crioglobulinemia esencial"
+        ],
+        "indiceCorrecto": 3,
+        "explicacion": "Fuente: examen_glomerulo_RESP.pdf (Examen 2, Pregunta 26) y MAT (2).docx. La anemia hemolítica microangiopática con esquistocitos se presenta en las MAT (PTT, SUH, SAF, HTA maligna), pero no forma parte de la crioglobulinemia esencial (que causa GNMP por inmunocomplejos).",
+        "categoria": "Examen Modelo Residencia - Microangiopatías Trombóticas"
+      },
+      {
+        "pregunta": "En un paciente con Vasculitis ANCA MPO que presenta remisión clínica pero persiste con títulos bajos de ANCA positivos de forma prolongada, ¿cuál es la conducta según las guías?",
+        "opciones": [
+          "Evaluar la evolución clínica y el sedimento urinario; la persistencia aislada de ANCA serológico no justifica por sí sola intensificar la inmunosupresión en ausencia de brote inflamatorio activo",
+          "Indicar plasmaféresis diaria por 1 año",
+          "Reiniciar pulsos de ciclofosfamida inmediatamente",
+          "Realizar nefrectomía profiláctica"
+        ],
+        "indiceCorrecto": 0,
+        "explicacion": "Fuente: examen_glomerulo_RESP.pdf (Examen 2, Pregunta 27) y VASCULITIS.docx. La titulación serológica aislada de ANCA no debe guiar por sí sola cambios terapéuticos agresivos si el sedimento urinario es inactivo y la función renal permanece estable.",
+        "categoria": "Examen Modelo Residencia - Vasculitis"
+      },
+      {
+        "pregunta": "En la Glomerulonefritis Extracapilar Tipo I (anti-MBG), ¿cuál es la efectividad de la Plasmaféresis si se inicia cuando el paciente ya está en anuria y requiere hemodiálisis con 100% de semilunas fibrosas?",
+        "opciones": [
+          "Extremadamente baja / nula recuperación renal (<5%); la PLEX es eficaz si se inicia precozmente antes de la anuria y la esclerosis avanzada",
+          "100% de curación sin secuelas",
+          "Igual respuesta sin importar el tiempo de evolución",
+          "Provoca shock anafiláctico en el 100% de los casos"
+        ],
+        "indiceCorrecto": 0,
+        "explicacion": "Fuente: examen_glomerulo_RESP.pdf (Examen 2, Pregunta 28) y GPC3.docx. En la enfermedad anti-MBG, si la creatinina es >6 mg/dl o requiere diálisis con 100% de crescents fibrosas, la respuesta a PLEX e inmunosupresión es nula y no recupera función renal.",
+        "categoria": "Examen Modelo Residencia - Glomerulopatías Extracapilares"
+      },
+      {
+        "pregunta": "En la Enfermedad de Alport ligada al cromosoma X (mutación en COL4A5), ¿cuál es el patrón de herencia y severidad entre varones y mujeres?",
+        "opciones": [
+          "Los varones afectados (hemocigotas) presentan un curso grave con insuficiencia renal terminal en la juventud (20-30 años); las mujeres (heterocigotas) suelen presentar microhematuria persistente de curso más indolente",
+          "Las mujeres presentan el 100% de los casos graves y los varones son asintomáticos",
+          "Ambos sexos evolucionan a la ceguera antes de los 5 años",
+          "No existe transmisión hereditaria"
+        ],
+        "indiceCorrecto": 0,
+        "explicacion": "Fuente: examen_glomerulo_RESP.pdf (Examen 2, Pregunta 29) y Comparto 'Alport uba' contigo.pptx. En el Alport X-linked, los varones sufren pérdida progresiva de nefronas e hipoacusia precoz, mientras las mujeres portadoras suelen tener hematuria aislada por inactivación del X.",
+        "categoria": "Examen Modelo Residencia - Glomerulopatías Hereditarias"
+      },
+      {
+        "pregunta": "En la Enfermedad por Depósitos Densos (DDD), ¿dónde se ubican los depósitos denso-electrónicos en la microscopía electrónica?",
+        "opciones": [
+          "Dentro de la lámina densa de la Membrana Basal Glomerular de forma continua",
+          "En la vertiente subepitelial aislada en humps",
+          "En el citoplasma de las células endoteliales",
+          "En la luz capilar únicamente"
+        ],
+        "indiceCorrecto": 0,
+        "explicacion": "Fuente: examen_glomerulo_RESP.pdf (Examen 2, Pregunta 30) y GPC3.docx. La DDD se define ultrastructuralmente por depósitos altamente electrón-densos reemplazando la lámina densa de la MBG.",
+        "categoria": "Examen Modelo Residencia - Complemento"
+      },
+      {
+        "pregunta": "En la Nefritis Lúpica Clase IV, ¿cuál es el pilar de la terapia de mantenimiento tras completar la inducción?",
+        "opciones": [
+          "Micofenolato Mofetil (1.5-2 g/día) o Azatioprina combinados con dosis bajas de esteroides durante 18 a 36 meses",
+          "Pulsos mensuales de ciclofosfamida indefinidamente",
+          "Suspendimiento de toda la medicación a las 4 semanas",
+          "D-penicilamina por 10 años"
+        ],
+        "indiceCorrecto": 0,
+        "explicacion": "Fuente: examen_glomerulo_RESP.pdf (Examen 2, Pregunta 31) y nefritis lupica 1.docx. El mantenimiento de la nefritis lúpica proliferativa se realiza con MFM o AZA por al menos 2-3 años para evitar recaídas.",
+        "categoria": "Examen Modelo Residencia - Nefritis Lúpica"
+      },
+      {
+        "pregunta": "En un paciente anciano que consulta por proteinuria nefrótica y pérdida de peso, la detección de una Glomerulopatía Membranosa PLA2R negativa obliga a descartar:",
+        "opciones": [
+          "Neoplasia sólida oculta (carcinoma de pulmón, colon, próstata o estómago)",
+          "Glomerulonefritis postestreptocócica aguda",
+          "Nefropatía por cambios mínimos corticosensible",
+          "Síndrome de Alport autosómico dominante"
+        ],
+        "indiceCorrecto": 0,
+        "explicacion": "Fuente: examen_glomerulo_RESP.pdf (Examen 2, Pregunta 32) y NEFROPATIA CAMBIOS MINIMOS.docx. La membranosa PLA2R negativa en mayores de 60 años se asocia en un 20% a tumores sólidos paraneoplásicos.",
+        "categoria": "Examen Modelo Residencia - Glomerulopatías"
+      },
+      {
+        "pregunta": "En las Vasculitis ANCA asociadas con hemorragia alveolar grave, ¿cuál es el signo clínico / radiológico característico?",
+        "opciones": [
+          "Hemoptisis, caída de la hemoglobina, infiltrados alveolares bilaterales en la TC de tórax y aumento de la capacidad de difusión de monóxido de carbono (DLCO)",
+          "Derrame pleural unilateral sin anemia",
+          "Neumotórax a tensión con hiperclaridad",
+          "Aumento de la saturación de oxígeno al 100%"
+        ],
+        "indiceCorrecto": 0,
+        "explicacion": "Fuente: examen_glomerulo_RESP.pdf (Examen 2, Pregunta 33) y VASCULITIS.docx. La hemorragia alveolar cursa con hemoptisis, infiltrados en vidrio esmerilado y aumento de la DLCO por absorción del CO por la hemoglobina en los alvéolos.",
+        "categoria": "Examen Modelo Residencia - Vasculitis"
+      },
+      {
+        "pregunta": "En el Síndrome Urémico Hemolítico Atípico (SUHa), ¿cuál es el porcentaje de recurrencia de la enfermedad en el Trasplante Renal en pacientes con mutaciones del Factor H si no reciben profilaxis con eculizumab?",
+        "opciones": [
+          "Mayor al 80% al 90% (con alta tasa de pérdida del injerto)",
+          "0%",
+          "Exactamente 5%",
+          "100% curación del complemento tras el implante"
+        ],
+        "indiceCorrecto": 0,
+        "explicacion": "Fuente: examen_glomerulo_RESP.pdf (Examen 2, Pregunta 34) y MICROANGIOPATIA TROMBOTICA.pptx. Las mutaciones del Factor H sintetizado en hígado persisten tras el trasplante renal, causando recurrencia de la MAT en >80% de los injertos si no se bloquea C5.",
+        "categoria": "Examen Modelo Residencia - MAT"
+      },
+      {
+        "pregunta": "En la Nefropatía por IgA, ¿cuál es el evento patogénico inicial de la 'Hipótesis de los 4 impactos' (Four-Hit Hypothesis)?",
+        "opciones": [
+          "Síntesis incrementada de IgA1 circulante deficiente en galactosa en la región bisagra (Impacto 1)",
+          "Formación de anticuerpos IgG anti-PLA2R (Impacto 1)",
+          "Deficiencia de ADAMTS13 en endotelio (Impacto 1)",
+          "Mutación en el gen COL4A3 (Impacto 1)"
+        ],
+        "indiceCorrecto": 0,
+        "explicacion": "Fuente: examen_glomerulo_RESP.pdf (Examen 2, Pregunta 35) y NEFROPATIA CAMBIOS MINIMOS.docx. La hipótesis de los 4 impactos arranca con la sobreproducción de IgA1 aberrante pobre en galactosa (Hit 1), reconocida por autoanticuerpos IgG (Hit 2), formando complejos (Hit 3) que se depositan en el mesangio (Hit 4).",
+        "categoria": "Examen Modelo Residencia - Glomerulopatías"
+      },
+      {
+        "pregunta": "En la patogenia de la tubulopatía proximal por cadenas livianas (Síndrome de Fanconi en GMSR/Mieloma), ¿cuál es el receptor endocítico específico del borde en cepillo al que se unen las cadenas livianas filtradas y qué ocurre intracelularmente al saturarse?",
+        "opciones": [
+          "Se unen al receptor megalina/cubilina; la sobrecarga endosómica sobrepasa la capacidad proteolítica de los lisosomas, induciendo ruptura lisosomal, cristalización citoplasmática y disfunción tubular proximal",
+          "Se unen a la uromodulina (Tamm-Horsfall); precipitan en la luz provocando obstrucción directa del túbulo contorneado proximal",
+          "Se unen a la nefrina podocitaria; destruyen los diafragmas de hendidura causando síndrome nefrótico masivo",
+          "Se unen al canal ENaC; inhiben la reabsorción de sodio produciendo síndrome perdedor de sal"
+        ],
+        "indiceCorrecto": 0,
+        "explicacion": "Fuente: DISCRASIAS DE CELULAS PLASMATICAS.docx y Gammapatias monoclonales.pptx. Las cadenas livianas filtradas son internalizadas en el túbulo proximal vía el complejo receptor megalina/cubilina. Las cadenas resistentes a la proteólisis provocan sobrecarga endolisosomal, liberación de enzimas líticas al citosol, vacuolización y formación de cristales intracitoplasmáticos que alteran los cotransportadores (Fanconi).",
+        "categoria": "Discrasias de Células Plasmáticas - Fisiopatología Fina"
+      },
+      {
+        "pregunta": "¿Por qué motivo fisiopatológico la administración de diuréticos de asa (como la Furosemida) o AINEs en un paciente con Mieloma Múltiple activo puede desencadenar anuria e insuficiencia renal aguda fulminante?",
+        "opciones": [
+          "Porque la furosemida concentra la orina intratubular y aumenta la acidez, acelerando drásticamente la co-precipitación de las cadenas livianas de Bence Jones con la mucoproteína de Tamm-Horsfall en el túbulo distal",
+          "Porque estimulan la síntesis hepática de cadenas pesadas IgG que ocluyen la arteria renal hiliar",
+          "Porque destruyen los podocitos produciendo una podocitopatía colapsante irreversible en 24 horas",
+          "Porque neutralizan la fagocitosis de plasmocitos por los neutrófilos en la médula ósea"
+        ],
+        "indiceCorrecto": 0,
+        "explicacion": "Fuente: DISCRASIAS DE CELULAS PLASMATICAS.docx y Gammapatias monoclonales.pptx. En el túbulo distal, la solubilidad de las cadenas livianas depende del volumen y pH. La furosemida deshidrata y acidifica el fluido tubular, forzando la unión entre las cadenas libres y la uromodulina (Tamm-Horsfall), forming cilindros céreos rígidos e insolubles que taponan las luces tubulares.",
+        "categoria": "Discrasias de Células Plasmáticas - Fisiopatología Fina"
+      },
+      {
+        "pregunta": "En la Nefritis Lúpica, ¿cuáles son las inclusiones ultraestructurales endoteliales observadas al ME y qué mediador inmunológico estimula su formación?",
+        "opciones": [
+          "Inclusiones tubulorreticulares (ITR) o cuerpos de interferón; estimuladas por altos niveles de Interferón alfa (IFN-α)",
+          "Aurosomas citoplasmáticos; estimulados por la Interleucina 6 (IL-6)",
+          "Microtúbulos paralelos de 40 nm; estimulados por el C1q nefrítico",
+          "Fibrillas desorganizadas de 8 nm; estimuladas por el TNF-beta"
+        ],
+        "indiceCorrecto": 0,
+        "explicacion": "Fuente: nefritis lupica 1.docx y Nefritis Lupica.pptx. Las inclusiones tubulorreticulares (ITR) en las células endoteliales glomerulares son un rasgo ultrastructural característico de la nefritis lúpica activa. Su síntesis dentro del retículo endoplásmico está inducida directamente por el Interferón alfa (IFN-α).",
+        "categoria": "Nefritis Lúpica - Ultraestructura"
+      },
+      {
+        "pregunta": "En las vasculopatías asociadas a la Nefritis Lúpica en la biopsia renal, ¿cuál es la lesión vascular histológica MÁS FRECUENTE y cómo se diferencia de la vasculitis necrotizante?",
+        "opciones": [
+          "Los depósitos de inmunocomplejos en la pared vascular (70% de las vasculopatías lúpicas); a diferencia de la vasculitis necrotizante, no presentan necrosis fibrinoide ni infiltrado inflamatorio destructivo de la pared",
+          "La microangiopatía trombótica con trombos de fibrina e hipertensión maligna en el 90% de los vasos",
+          "La arteriosclerosis hialina aislada sin depósito de complemento",
+          "La displasia fibromuscular de arterias interlobulares"
+        ],
+        "indiceCorrecto": 0,
+        "explicacion": "Fuente: nefritis lupica 1.docx (Trabajo De Rosa / Nadal en 160 PBR) y Nefritis Lupica.pptx. La vasculopatía lúpica más común son los depósitos de inmunocomplejos en la pared vascular (DINC/DIC, cerca del 70% de las lesiones vasculares lúpicas), mientras que la vasculitis necrotizante no inflamatoria o inflamatoria representa una proporción menor (10%).",
+        "categoria": "Nefritis Lúpica - Patología Vascular"
+      },
+      {
+        "pregunta": "En la patogenia de la Glomerulonefritis Aguda Postestreptocócica, ¿cuál es la función del antígeno nefritogénico NAPlr y cómo facilita la llegada del antígeno SPEB al espacio subepitelial?",
+        "opciones": [
+          "NAPlr actúa como receptor de plasmina, la cual degrada la matriz y activa colagenasas latentes que remueven las cargas aniónicas (heparán sulfato) de la MBG, permitiendo el pasaje de la exotoxina catiónica SPEB a la vertiente subepitelial",
+          "NAPlr destruye directamente las uniones estrechas podocitarias mediante la toxina Shiga",
+          "NAPlr inhibe la vía alternativa del complemento en la luz capilar evitando la llegada de neutrófilos",
+          "NAPlr induce la fagocitosis de la membrana basal por las células mesangiales"
+        ],
+        "indiceCorrecto": 0,
+        "explicacion": "Fuente: Glomerulonefritis aguda postestreptocócica.docx y pptx. El NAPlr se une a la plasmina endógena mantenida en estado activo. La plasmina digiere componentes de la matriz y activa metaloproteinasas, alterando la barrera de carga negativa de la MBG. Esto permite que el antígeno catiónico SPEB atraviese la pared capilar y co-localice con C3 formando las jorobas (humps).",
+        "categoria": "GNPE - Fisiopatología Fina"
+      },
+      {
+        "pregunta": "¿Cuál es la conducta y el límite temporal estricto para la normalización del complemento C3 sérico en el seguimiento de un niño con sospecha de GNPE típica?",
+        "opciones": [
+          "El C3 debe normalizarse obligatoriamente antes de las 8 a 12 semanas (2 a 3 meses); la persistencia de hipocomplementemia más allá de las 8-12 semanas exige Biopsia Renal para descartar Glomerulopatía C3 o GNMP",
+          "El C3 debe normalizarse a las 24 horas del inicio de la antibioticoterapia oral",
+          "El C3 permanece descendido de por vida y no requiere controles serológicos",
+          "El C3 debe descender aún más durante los primeros 2 años antes de recuperarse"
+        ],
+        "indiceCorrecto": 0,
+        "explicacion": "Fuente: Glomerulonefritis aguda postestreptocócica.docx y GPC3.docx. En la GNPE, el 90% de los pacientes presenta C3 bajo en la fase aguda. Si el C3 no se normaliza dentro de las 8 a 12 semanas (2-3 meses), está indicada la PBR ya que sugiere otra glomerulopatía hipocomplementémica crónica (como GPC3, DDD o GNMP).",
+        "categoria": "GNPE - Criterios Diagnósticos"
+      },
+      {
+        "pregunta": "En la fisiopatología de las Microangiopatías Trombóticas, ¿cuál es el rol fundamental del Factor de Crecimiento Endotelial Vascular (VEGF) sintetizado por el podocito sobre la protección endotelial?",
+        "opciones": [
+          "El VEGF podocitario es imprescindible para que el Factor H plasmático se fije al ácido siálico y glucosaminoglucanos endoteliales y desplace al C3b; si hay daño podocitario o déficit de VEGF, el Factor H no puede proteger al endotelio",
+          "El VEGF podocitario bloquea la síntesis de colágeno IV en la lámina densa",
+          "El VEGF destruye las plaquetas atrapadas en la arteriola aferente",
+          "El VEGF induce la secreción de inmunoglobulina monoclonal IgG1"
+        ],
+        "indiceCorrecto": 0,
+        "explicacion": "Fuente: MAT (2).docx. El podocito produce VEGF que actúa paracrinamente sobre la célula endotelial fenestrada. El VEGF induce la expresión de glucosaminoglucanos en la superficie endotelial a los cuales se une el Factor H para inactivar el C3b. La lesión podocitaria (caída de VEGF) deshabilita la protección del Factor H, precipitando la MAT.",
+        "categoria": "Microangiopatías Trombóticas - Fisiopatología Fina"
+      },
+      {
+        "pregunta": "En la diferenciación entre Preeclampsia / HELLP y el Síndrome Urémico Hemolítico Atípico Posparto (SUH posparto), ¿cuál es el comportamiento clínico tras el alumbramiento (parto) y por qué ocurre?",
+        "opciones": [
+          "La Preeclampsia/HELLP mejoran al retirarse la placenta isquémica; mientras que el SUH posparto empeora o persiste tras el parto porque la remoción de la placenta elimina moléculas placentarias protectoras del complemento (DAF/CD55, Factor H), desencadenando la MAT en una paciente predispuesta",
+          "El SUH posparto se cura al retirar la placenta, mientras que la preeclampsia empeora durante 6 meses",
+          "Ambas entidades se tratan únicamente con corticosteroides en pulsos y no dependen del alumbramiento",
+          "La Preeclampsia presenta hemólisis con Coombs directa positiva y el SUH posparto Coombs negativa"
+        ],
+        "indiceCorrecto": 0,
+        "explicacion": "Fuente: MAT (2).docx y PE, ECLAMPSIA, HELLP.docx. La placenta expresa altas concentraciones de reguladores del complemento (DAF, MCP, Factor H). Tras el parto, cae la protección placentaria; en pacientes con mutaciones en la vía alternativa, esto desencadena el SUH posparto (hasta 1 mes tras el parto), mientras que la preeclampsia/HELLP pura revierte tras evacuar la placenta.",
+        "categoria": "Obstetricia y Riñón - MAT"
+      },
+      {
+        "pregunta": "En la Crisis Renal Esclerodérmica (CRE), ¿cuál es la lesión histológica vascular patognomónica al microscopio óptico y cuál es el tratamiento de elección que redujo drásticamente su mortalidad?",
+        "opciones": [
+          "Proliferación miointimal concéntrica en arterias interlobulares en 'catáfilas de cebolla' con estrechamiento luminal; tratamiento de elección con Inhibidores de la ECA (IECA)",
+          "Trombosis puramente venosa hiliar; tratamiento con anticoagulación con heparina de bajo peso molecular",
+          "Depósitos de amiloide AL en la adventicia; tratamiento con melfalán y prednisona",
+          "Glomerulonefritis extracapilar paucinmune; tratamiento con Rituximab"
+        ],
+        "indiceCorrecto": 0,
+        "explicacion": "Fuente: ARTRITIS REUMATOLOGICA Y ESCLERODERMIA.docx y MAT (2).docx. La CRE cursa con proliferación mucoide de la íntima y remodelado arteriolar en 'piel de cebolla' que causa isquemia renal e hiperreninemia extrema. La introducción de los IECA (captopril/enalapril) permitió revertir la crisis e incluso recuperar función renal a pacientes en diálisis.",
+        "categoria": "Esclerodermia y Enfermedades Autoinmunes"
+      },
+      {
+        "pregunta": "En un paciente con Artritis Reumatoidea de 18 años de evolución que desarrolla proteinuria nefrótica y hepatomegalia, ¿cuál es el hallazgo patológico en la biopsia renal y la proteína precursor sérica involucrada?",
+        "opciones": [
+          "Amiloidosis AA (secundaria); derivada de la acumulación de la proteína Sérica Amiloide A (SAA), reactante de fase aguda sintetizado en el hígado bajo estímulo de IL-1, IL-6 y TNF-α",
+          "Amiloidosis AL; derivada de cadenas livianas libres Lambda producidas por plasmocitos articulares",
+          "Nefropatía por depósitos de cadenas pesadas Gamma; derivada de factor reumatoideo IgM",
+          "Glomerulonefritis membranosa primaria por autoanticuerpos anti-PLA2R"
+        ],
+        "indiceCorrecto": 0,
+        "explicacion": "Fuente: ARTRITIS REUMATOLOGICA Y ESCLERODERMIA.docx y DISCRASIAS DE CELULAS PLASMATICAS.docx. La Artritis Reumatoidea no controlada es la causa clásica de Amiloidosis AA. La inflamación crónica estimula la síntesis hepática de SAA (reactante de fase aguda). Tras años, fragmentos de SAA forman fibrillas amiloides insolubles (Rojo Congo positivo con birrefringencia verde manzana).",
+        "categoria": "Esclerodermia y Enfermedades Autoinmunes"
+      },
+      {
+        "pregunta": "En pacientes con Artritis Reumatoidea tratados históricamente con Sales de Oro o D-Penicilamina que desarrollan proteinuria, ¿qué inclusión ultrastructural en células tubulares es característica del oro?",
+        "opciones": [
+          "Aurosomas (inclusiones citoplasmáticas electrón-densas metálicas en células tubulares proximales)",
+          "Inclusiones tubulorreticulares estimuladas por interferón",
+          "Cristales romboidales de cadenas livianas Kappa",
+          "Cuerpos ovales grasos libres en la membrana basal"
+        ],
+        "indiceCorrecto": 0,
+        "explicacion": "Fuente: ARTRITIS REUMATOLOGICA Y ESCLERODERMIA.docx. Las sales de oro producían nefrotoxicidad glomerular (membranosa o cambios mínimos) y tubular. En la microscopía electrónica de las células tubulares es patognomónico hallar inclusiones electrón-densas llamadas 'Aurosomas'.",
+        "categoria": "Esclerodermia y Enfermedades Autoinmunes"
+      },
+      {
+        "pregunta": "¿Cómo se define biológicamente la Crioglobulinemia Mixta Tipo 2 y cuál es su etiología infecciosa principal en más del 80% de los casos?",
+        "opciones": [
+          "Presencia de un complejo inmunológico formado por una IgM monoclonal que actúa como Factor Reumatoideo uniéndose a una IgG policlonal; secundaria a la infección crónica por el Virus de la Hepatitis C (VHC)",
+          "Inmunoglobulina IgG monoclonal aislada sin factor reumatoideo; secundaria a Parvovirus B19",
+          "Cadenas livianas libres IgA policlonales; secundaria a Helicobacter pylori",
+          "Inmunocomplejos de C1q libre; secundaria a tuberculosis extrapulmonar"
+        ],
+        "indiceCorrecto": 0,
+        "explicacion": "Fuente: ARTRITIS REUMATOLOGICA Y ESCLERODERMIA.docx y GPC3.docx. La Crioglobulinemia Tipo 2 (mixta) consiste en un componente monoclonal (usualmente IgM con actividad de factor reumatoideo) unido a IgG policlonal. En más del 80-90% de los pacientes es secundaria a la infección crónica por VHC y responde al tratamiento antiviral con sofosbuvir.",
+        "categoria": "Esclerodermia y Enfermedades Autoinmunes"
+      },
+      {
+        "pregunta": "En la patogenia de las Vasculitis ANCA asociadas (GPA/MPA), ¿a qué se denomina 'NETs' (Neutrophil Extracellular Traps) y cuál es su impacto sobre el endotelio?",
+        "opciones": [
+          "Mallas filamentosas de ADN, histonas y enzimas granulares (PR3/MPO) liberadas por neutrófilos tras el estímulo con ANCA, que se adscriben al endotelio causando citotoxicidad directa y activando la vía alternativa del complemento",
+          "Trampas de colágeno IV sintetizadas por la cápsula de Bowman para detener la hemorragia",
+          "Redes de fibrina intravascular inducidas por la plasmina bacteriana",
+          "Vesículas de fosfolípidos secretadas por eritrocitos fragmentados"
+        ],
+        "indiceCorrecto": 0,
+        "explicacion": "Fuente: VASCULITIS.docx y VASCULITIS.pptx. La NETosis es un tipo de muerte celular donde el neutrófilo extruye una malla de ADN combinada con PR3 y MPO. Estas trampas (NETs) dañan directamente la pared vascular, sostienen la respuesta autoinmune contra ANCA y activan la vía alternativa del complemento.",
+        "categoria": "Vasculitis ANCA - Fisiopatología Fina"
+      },
+      {
+        "pregunta": "En la Vasculitis ANCA asociada por MPO (Poliangeítis Microscópica), ¿cuál es el patrón morfológico renal característico de la variante 'VLR' (Vasculitis de Lenta Evolución)?",
+        "opciones": [
+          "Presenta en la biopsia renal un predominio de esclerosis glomerular global/segmentaria y fibrosis tubulointersticial avanzada debido a un curso indolente subclínico",
+          "Presenta exclusivamente microangiopatía trombótica aguda sin fibrosis",
+          "Muestra proliferación endocapilar difusa con depósitos subepiteliales de C3 en guirnalda",
+          "Cursa con borramiento pedicelar del 100% sin semilunas ni fibrosis"
+        ],
+        "indiceCorrecto": 0,
+        "explicacion": "Fuente: VASCULITIS.pptx. La vasculitis MPO-ANCA suele progresar de forma indolente ('VLR' o de lenta evolución), por lo que al momento de la biopsia se observan lesiones crónicas permanentes (esclerosis y atrofia tubular), a diferencia de la PR3-ANCA que causa brotes inflamatorios agudos y explosivos.",
+        "categoria": "Vasculitis ANCA"
+      },
+      {
+        "pregunta": "En el diagnóstico de la Glomerulopatía C3 (GPC3), ¿cuál es el patrón de Inmunofluorescencia obligatorio para su definición?",
+        "opciones": [
+          "Tinción positiva para C3 con una intensidad al menos 2 órdenes de magnitud mayor que cualquier otra inmunoglobulina (IgG, IgA, IgM) o tinción aislada/exclusiva para C3",
+          "Tinción 'Full House' positiva para IgG, IgA, IgM, C3 y C1q",
+          "Inmunofluorescencia totalmente negativa para todas las fracciones",
+          "Tinción lineal continua para IgG a lo largo de la MBG"
+        ],
+        "indiceCorrecto": 0,
+        "explicacion": "Fuente: GPC3.docx y GN PRIMARIAS.pptx. La Glomerulopatía C3 (GPC3, que abarca la DDD y la GNC3) se define histológicamente por la presencia dominante o EXCLUSIVA de depósitos de C3 por inmunofluorescencia (mínimo 2 órdenes de intensidad por encima de cualquier Ig), reflejando la desregulación de la vía alternativa.",
+        "categoria": "Glomerulopatías C3 y Complemento"
+      },
+      {
+        "pregunta": "En la Enfermedad por Depósitos Densos (DDD), ¿cuál es el hallazgo ultratructural característico al Microscopio Electrónico?",
+        "opciones": [
+          "Depósitos electrón-densos continuos en la lámina densa de la membrana basal glomerular que la reemplazan y ensanchan",
+          "Fibrillas no ramificadas dispuestas al azar de 20 nm de diámetro",
+          "Microtúbulos huecos alineados en paralelo de 50 nm",
+          "Jorobas o humps subepiteliales aisladas en el polo urinario"
+        ],
+        "indiceCorrecto": 0,
+        "explicacion": "Fuente: GPC3.docx y GN PRIMARIAS.pptx. La DDD (anteriormente llamada GNMP tipo II) se caracteriza en la microscopía electrónica por la presencia de depósitos extremadamente electrón-densos, en banda continua dentro de la lámina densa de la MBG, transformándola y ensanchándola.",
+        "categoria": "Glomerulopatías C3 y Complemento"
+      },
+      {
+        "pregunta": "¿Por qué motivo se contraindica formalmente el trasplante renal con Donante Vivo en pacientes con Enfermedad por Depósitos Densos (DDD)?",
+        "opciones": [
+          "Por la elevadísima tasa de recurrencia precoz de la enfermedad en el injerto (50% a 80%) que conduce a pérdida del trasplante e insuficiencia renal terminal",
+          "Por el riesgo de desarrollar hepatotoxicidad aguda por la droga MFM en el donante",
+          "Por la transmisión horizontal de anticuerpos anti-PLA2R al receptor",
+          "Porque los donantes vivos no poseen el factor C3 del complemento"
+        ],
+        "indiceCorrecto": 0,
+        "explicacion": "Fuente: GPC3.docx y GN PRIMARIAS.pptx. La DDD presenta un pronóstico post-trasplante sombrío con un riesgo de recurrencia histológica de hasta el 80% que destruye el injerto. Por razones éticas, se contraindica el Donante Vivo para no arriesgar la nefrona de un familiar sano frente a una recurrencia inevitable.",
+        "categoria": "Glomerulopatías C3 y Complemento"
+      },
+      {
+        "pregunta": "En la Glomerulonefritis Fibrilar, ¿cuál es el biomarcador proteico descubierto que la distingue de la Amiloidosis y qué diámetro tienen sus fibrillas al ME?",
+        "opciones": [
+          "DNAJB9 positivo en las fibrillas; fibrillas no amiloides desorganizadas de 16 a 24 nm de diámetro (promedio 20 nm), Rojo Congo negativas",
+          "PLA2R positivo; microtúbulos huecos en paralelo de 50 nm",
+          "C1q positivo; fibrillas de colágeno tipo I de 100 nm",
+          "THSD7A positivo; fibrillas amiloides de 8 a 10 nm Rojo Congo positivas"
+        ],
+        "indiceCorrecto": 0,
+        "explicacion": "Fuente: NEFROPATIA CAMBIOS MINIMOS.docx y DISCRASIAS DE CELULAS PLASMATICAS.docx. La GN Fibrilar es Rojo Congo negativa y presenta al ME fibrillas aleatorias de 16-24 nm (promedio 20 nm, el doble que las de amiloide). Su biomarcador diagnóstico específico con sensibilidad y especificidad casi del 100% es la proteína DNAJB9.",
+        "categoria": "Glomerulopatías Primarias y Misceláneas"
+      },
+      {
+        "pregunta": "En la Glomerulonefritis Inmunotactoide, ¿cuál es la diferencia en la microscopía electrónica frente a la GN Fibrilar y a qué patologías linfoproliferativas se asocia en 2/3 de los adultos?",
+        "opciones": [
+          "Presenta microtúbulos huecos organizados en paralelo de gran tamaño (30 a 50 nm); asociada en 2/3 de los casos a Leucemia Linfocítica Crónica (LLC) o Linfoma B B-cell",
+          "Presenta fibrillas sólidas de 8 nm; asociada a carcinoma papilar de tiroides",
+          "Presenta cristales de cistina; asociada a osteosarcoma medular",
+          "Presenta borramiento pedicelar difuso; asociada a leucemia mieloide aguda"
+        ],
+        "indiceCorrecto": 0,
+        "explicacion": "Fuente: NEFROPATIA CAMBIOS MINIMOS.docx y Gammapatias monoclonales.pptx. A diferencia de las fibrillas desordenadas de 20 nm de la GN Fibrilar, la GN Inmunotactoide exhibe microtúbulos alineados en paralelo de 30 a 50 nm. Además, en más del 65% de los casos oculta una leucemia linfocítica crónica (LLC) o linfoma B.",
+        "categoria": "Glomerulopatías Primarias y Misceláneas"
+      },
+      {
+        "pregunta": "En la Enfermedad de Alport (nefritis hereditaria por mutación de colágeno IV), ¿cuál es el hallazgo ultraestructural patognomónico al Microscopio Electrónico que la diferencia de la Basalopatía Fina?",
+        "opciones": [
+          "Laminación, fragmentación y disociación de la lámina densa en capas paralelas ('aspecto en hojaldre' o panal de abejas) con engrosamiento y adelgazamiento alternantes (800-1200 nm)",
+          "Adelgazamiento armónico y uniforme menor a 250 nm de toda la MBG sin laminación",
+          "Presencia de jorobas subepiteliales masivas compuestas por estreptolisina",
+          "Microtúbulos intracitoplasmáticos podocitarios"
+        ],
+        "indiceCorrecto": 0,
+        "explicacion": "Fuente: Comparto 'Alport uba' contigo.pptx y NEFROPATIA CAMBIOS MINIMOS.docx. Mientras la Enfermedad de la Membrana Basal Fina muestra un adelgazamiento uniforme (<250 nm), el Síndrome de Alport muestra al ME la clásica disrupción de la MBG con engrosamientos (800-1200 nm), laminación y división de la lámina densa.",
+        "categoria": "Glomerulopatías Hereditarias"
+      },
+      {
+        "pregunta": "En la Nefritis Lúpica, ¿cuáles son los componentes que integran el Índice de Cronicidad (escala de 0 a 12) de Austin / NIH en la biopsia renal?",
+        "opciones": [
+          "Esclerosis glomerular, semilunas fibrosas, atrofia tubular y fibrosis intersticial",
+          "Hipercelularidad endocapilar, necrosis fibrinoide, cariorrexis y trombos hialinos",
+          "Niveles de creatinina sérica y proteinuria de 24 horas",
+          "Porcentaje de hematíes dismórficos y cilindros hemáticos"
+        ],
+        "indiceCorrecto": 0,
+        "explicacion": "Fuente: Nefritis Lupica.pptx y nefritis lupica 1.docx. El Índice de Cronicidad evalúa lesiones irreversibles (de 0 a 3+ cada una, total 12): 1) Esclerosis glomerular; 2) Semilunas fibrosas; 3) Atrofia tubular; y 4) Fibrosis intersticial. Su puntaje elevado contraindica inmunosupresión agresiva por falta de reversibilidad.",
+        "categoria": "Nefritis Lúpica - Criterios Histológicos"
+      },
+      {
+        "pregunta": "¿Cuál es la causa primaria MÁS FRECUENTE de Síndrome Nefrótico en el paciente adulto no diabético y qué subtipo de inmunoglobulina compone los depósitos en la variante idiopática?",
+        "opciones": [
+          "Glomerulopatía Membranosa primaria (20-30% de los síndromes nefróticos adultos); mediada por autoanticuerpos IgG4 anti-PLA2R",
+          "Nefropatía por Cambios Mínimos; mediada por IgA1 deficiente en galactosa",
+          "Glomerulonefritis C3; mediada por IgM monoclonal",
+          "Esclerosis Glomerular Focal y Segmentaria; mediada por IgG1 anti-MBG"
+        ],
+        "indiceCorrecto": 0,
+        "explicacion": "Fuente: NEFROPATIA CAMBIOS MINIMOS.docx y primarias cambios minimos.pptx. En adultos no diabéticos, la Nefropatía Membranosa es la causa primaria líder de síndrome nefrótico (20-30%). En el 70-80% de los casos idiopáticos es provocada por autoanticuerpos de la subclase IgG4 dirigidos contra el receptor PLA2R.",
+        "categoria": "Glomerulopatías Primarias"
+      },
+      {
+        "pregunta": "En la Enfermedad por Anticuerpos Anti-Membrana Basal Glomerular (Anti-MBG / Goodpasture), ¿cuál es el antígeno blanco exacto de los autoanticuerpos y el patrón de Inmunofluorescencia?",
+        "opciones": [
+          "Dominio no colagenoso 1 (NC1) de la cadena alfa-3 del Colágeno Tipo IV; con patrón de Inmunofluorescencia lineal continuo para IgG a lo largo de la MBG",
+          "Dominio C-terminal de la nefrina; con patrón granular subepitelial para C3",
+          "Cadena alfa-5 del colágeno tipo I; con patrón 'Full House'",
+          "Proteína del cilio primario podocitario; con Inmunofluorescencia paucinmune"
+        ],
+        "indiceCorrecto": 0,
+        "explicacion": "Fuente: primera clase.docx y examen_glomerulo_RESP.pdf. La enfermedad anti-MBG surge por autoanticuerpos dirigidos contra el dominio NC1 de la cadena α3 del Colágeno IV. Su sello diagnóstico patognomónico es el depósito lineal continuo de IgG (y C3) bordeando la pared capilar.",
+        "categoria": "Glomerulopatías Extracapilares"
+      },
+      {
+        "pregunta": "En un paciente de 42 años con Obesidad Grado III (IMC 42) que presenta proteinuria de 3 g/24h e insuficiencia renal leve, ¿cuál es el mecanismo patogénico y el patrón histológico en la biopsia renal?",
+        "opciones": [
+          "Hiperfiltración e hipertrofia glomerular adaptativa que conduce a Glomerulomegalia y esclerosis focal y segmentaria de localización perihiliar, con borramiento pedicelar focal (en parches)",
+          "Destrucción podocitaria mediada por anticuerpos IgG4 anti-PLA2R con depósitos en espículas",
+          "Infiltración leucocitaria con vasculitis necrotizante de pequeños vasos p-ANCA positiva",
+          "Depósito intramembranoso de factores del complemento por pérdida del Factor H"
+        ],
+        "indiceCorrecto": 0,
+        "explicacion": "Fuente: NEFROPATIA CAMBIOS MINIMOS.docx y primarias cambios minimos.pptx. La nefropatía por obesidad es el prototipo de EGFS secundaria a hiperfiltración. La sobrecarga hemodinámica induce Glomerulomegalia (glomérulos gigantes), lesiones de esclerosis de localización perihiliar y fusión pedicelar segmentaria/focal.",
+        "categoria": "Glomerulopatías Secundarias"
+      },
+      {
+        "pregunta": "En el tratamiento de inducción de la Nefritis Lúpica proliferativa (Clases III y IV), ¿cuáles son los esquemas de primera línea avalados para lograr la remisión renal?",
+        "opciones": [
+          "Pulsos de Metilprednisolona seguidos de corticosteroides orales combinados con Micofenolato Mofetil (o Ciclofosfamida a bajas dosis esquema Euro-Lupus / NIH)",
+          "Monoterapia con IECA a dosis altas sin corticoides",
+          "Plasmaféresis aislada semanal por 5 años",
+          "Colchicina oral combinada con penicilina benzatínica"
+        ],
+        "indiceCorrecto": 0,
+        "explicacion": "Fuente: nefritis lupica 1.docx y Nefritis Lupica.pptx. La inducción de la nefritis lúpica severa exige pulsos de metilprednisolona (500-1000 mg IV x 3 días) seguidos de prednisona oral asociados a Micofenolato Mofetil (2-3 g/día) o Ciclofosfamida (esquema Euro-Lupus 500 mg IV c/15 días x 6 dosis).",
+        "categoria": "Nefritis Lúpica - Tratamiento"
+      },
+      {
+        "pregunta": "En la Nefritis Lúpica Clase V pura (Membranosa), ¿cuál es la indicación de inmunosupresión si se presenta con síndrome nefrótico masivo?",
+        "opciones": [
+          "Inducción con Corticoides orales asociados a Micofenolato Mofetil, Anticalcineurínicos (Tacrolimus/Voclosporina) o Ciclofosfamida",
+          "No administrar ninguna medicación y esperar 10 años",
+          "Tratamiento exclusivo con antibióticos betalactámicos",
+          "Diálisis peritoneal sin biopsia"
+        ],
+        "indiceCorrecto": 0,
+        "explicacion": "Fuente: nefritis lupica 1.docx y Nefritis Lupica.pptx. La Nefritis Lúpica Clase V pura en rango nefrótico requiere inmunosupresión combinada (esteroides + MFM o CNI) para inducir la remisión de la proteinuria.",
+        "categoria": "Nefritis Lúpica - Tratamiento"
+      },
+      {
+        "pregunta": "En la Preeclampsia, ¿cuál es el criterio diagnóstico de laboratorio de compromiso renal leve a moderado?",
+        "opciones": [
+          "Proteinuria ≥300 mg en 24 horas (o relación proteína/creatinina en orina ocasional ≥0.3) que aparece después de las 20 semanas de gestación",
+          "Proteinuria de 50 gramos por día en el primer trimestre",
+          "Hematuria aislada sin proteinuria en semana 8 de gestación",
+          "Caída del ácido úrico a cero"
+        ],
+        "indiceCorrecto": 0,
+        "explicacion": "Fuente: PE, ECLAMPSIA, HELLP.docx y PE, ECLAMPSIA Y HELLP.pptx. La preeclampsia se define por la aparición tras la semana 20 de gestación de HTA asociada a proteinuria ≥300 mg/24h (o IPC ≥0.3 mg/mg).",
+        "categoria": "Obstetricia y Riñón"
+      },
+      {
+        "pregunta": "En el diagnóstico del Síndrome de HELLP, ¿cuáles son los criterios de laboratorio que componen su acrónimo?",
+        "opciones": [
+          "Hemólisis (LDH >600 U/L, frotis con esquistocitos), Elevación de enzimas hepáticas (TGO/TGP >70 U/L) y Plaquetopenia (Plaquetas <100.000/mm³)",
+          "Hipernatremia, Eosinofilia, Leucocitosis y Lipuria",
+          "Hematuria, Eritrocitosis, Lipemia y Lisis muscular",
+          "Hipocalcemia, Enteropatía, Leucopenia y Linfropatía"
+        ],
+        "indiceCorrecto": 0,
+        "explicacion": "Fuente: PE, ECLAMPSIA, HELLP.docx. HELLP es la sigla en inglés de: Hemolysis, Elevated Liver enzymes, Low Platelets. Refleja microangiopatía hepato-renal grave.",
+        "categoria": "Obstetricia y Riñón"
+      },
+      {
+        "pregunta": "En la Nefritis Lúpica, ¿cuál es la complicación vascular conocida como 'Trombosis Microvascular Lúpica' sin depósito de complejos inmunes en la pared?",
+        "opciones": [
+          "Microangiopatía trombótica vinculada a Anticuerpos Antifosfolípidos (aPL) circulantes",
+          "Arteriosclerosis monckebergiana",
+          "Enfermedad de Takayasu aislada",
+          "Vasculitis de Churg-Strauss"
+        ],
+        "indiceCorrecto": 0,
+        "explicacion": "Fuente: nefritis lupica 1.docx y Nefritis Lupica.pptx. La MAT lúpica está fuertemente ligada a la presencia del anticoagulante lúpico o anti-cardiolipinas, produciendo trombosis fibrinoide en la luz sin depósitos murales de Igs.",
+        "categoria": "Nefritis Lúpica - Patología Vascular"
+      },
+      {
+        "pregunta": "En un niño de 6 años con diagnóstico de GNPE que presenta convulsiones y edema agudo de pulmón, ¿cuál es la causa fisiopatológica subyacente?",
+        "opciones": [
+          "Encefalopatía hipertensiva y sobrecarga de volumen (hipervolemia) por caída severa del filtrado glomerular con retención tubular hidroalcohólica",
+          "Meningitis bacteriana primaria por Streptococcus pyogenes",
+          "Invasión metastásica de células plasmáticas al encéfalo",
+          "Aplasia renal bilateral congénita"
+        ],
+        "indiceCorrecto": 0,
+        "explicacion": "Fuente: Glomerulonefritis aguda postestreptocócica.docx. Las complicaciones de la fase aguda de la GNPE (EAP y convulsiones) son secundarias a la rigurosa expansión del volumen extracelular por retención hidrosalina e hipertensión arterial severa.",
+        "categoria": "GNPE - Clínica"
+      },
+      {
+        "pregunta": "En el diagnóstico diferencial de las amiloidosis, ¿cuál es la tinción inmunohistoquímica que distingue a la Amiloidosis AA de la Amiloidosis AL?",
+        "opciones": [
+          "Positividad para la proteína SAA con pérdida de tinción Rojo Congo tras pre-tratamiento con permanganato de potasio en Amiloidosis AA",
+          "Positividad exclusiva para cadena ligera Kappa en Amiloidosis AA",
+          "Tinción para plata metenamina en Amiloidosis AL",
+          "Ausencia de tinción de Rojo Congo en ambas"
+        ],
+        "indiceCorrecto": 0,
+        "explicacion": "Fuente: DISCRASIAS DE CELULAS PLASMATICAS.docx y ARTRITIS REUMATOLOGICA Y ESCLERODERMIA.docx. La amiloidosis AA pierde la birrefringencia del Rojo Congo si se trata la muestra con permanganato de potasio (prueba de sensibilidad al permanganato), a diferencia de la AL.",
+        "categoria": "Amiloidosis - Diagnóstico Histológico"
+      },
+      {
+        "pregunta": "En la Glomerulopatía Membranosa primaria, ¿cuál es la utilidad clínica del monitoreo de los títulos séricos del anticuerpo anti-PLA2R durante el tratamiento?",
+        "opciones": [
+          "La caída de los títulos de anti-PLA2R precede en semanas a la remisión clínica de la proteinuria, permitiendo predecir la respuesta terapéutica antes de modificar la inmunosupresión",
+          "No presenta ninguna correlación con la evolución de la proteinuria",
+          "Indica la necesidad inmediata de hemodiálisis de urgencia",
+          "Sirve para diagnosticar diabetes mellitus tipo 2"
+        ],
+        "indiceCorrecto": 0,
+        "explicacion": "Fuente: NEFROPATIA CAMBIOS MINIMOS.docx y primarias cambios minimos.pptx. La respuesta inmunológica (negativización de anti-PLA2R) ocurre meses antes de la respuesta clínica (reducción de proteinuria), siendo el biomarcador definitivo de eficacia.",
+        "categoria": "Glomerulopatías Primarias - Biomarcadores"
+      },
+      {
+        "pregunta": "En las Vasculitis ANCA asociadas, ¿cuál es la razón por la cual el uso de Rituximab (anti-CD20) es equivalente a la Ciclofosfamida en la inducción según los estudios RAVE y RITCH?",
+        "opciones": [
+          "Rituximab depura velozmente los linfocitos B precursores eliminando la fuente de producción de los autoanticuerpos ANCA, logrando altas tasas de remisión con menor riesgo de infertilidad y cáncer vesical",
+          "Rituximab estimula la proliferación de neutrófilos maduros",
+          "Rituximab bloquea de forma irreversible los canales de calcio tubulares",
+          "Rituximab sintetiza uromodulina en el asa de Henle"
+        ],
+        "indiceCorrecto": 0,
+        "explicacion": "Fuente: VASCULITIS.docx y VASCULITIS.pptx. Los ensayos RAVE y RITCH demostraron que Rituximab es no inferior a la ciclofosfamida para inducir remisión en vasculitis ANCA, con la ventaja de evitar la cistitis hemorrágica, gonadotoxicidad y neoplasias asociadas a alquilantes.",
+        "categoria": "Vasculitis ANCA - Tratamiento"
+      },
+      {
+        "pregunta": "En la Nefritis Lúpica, ¿cuál es el parámetro histológico del índice de actividad que Puntúa el DOBLE (multiplicado por 2) en el cálculo de Austin / NIH?",
+        "opciones": [
+          "La Necrosis Fibrinoide / Cariorrexis y las Semilunas Celulares (Crescents)",
+          "La hipercelularidad endocapilar pura",
+          "La inflamación intersticial leve",
+          "Los trombos hialinos aislados"
+        ],
+        "indiceCorrecto": 0,
+        "explicacion": "Fuente: nefritis lupica 1.docx y Nefritis Lupica.pptx. En el score de actividad del NIH, la presencia de necrosis fibrinoide/cariorrexis y semilunas celulares se pondera x2 por reflejar lesión destructiva aguda grave.",
+        "categoria": "Nefritis Lúpica - Score NIH"
+      }
+    ]
+
+    // Estado de la App
+    let questionsBank = [];
+    let selectedCount = 10;
+    let currentQuizSession = null;
+    let currentAttempt = null;
+    let selectedAttemptForReview = null;
+    let currentFilter = 'all';
+    let askedQuestionKeys = new Set();
+
+    // Utilidades: Clave única normalizada y deduplicación de preguntas
+    function getQuestionKey(q) {
+      if (!q) return '';
+      const text = q.pregunta || q.questionText || q.question || '';
+      return text.trim().toLowerCase();
+    }
+
+    function deduplicateQuestions(list) {
+      if (!Array.isArray(list)) return [];
+      const seen = new Set();
+      const unique = [];
+      for (const item of list) {
+        if (!item) continue;
+        const key = getQuestionKey(item);
+        if (key && !seen.has(key)) {
+          seen.add(key);
+          unique.push(item);
+        }
+      }
+      return unique;
+    }
+
+    // Algoritmo Fisher-Yates (Knuth) insesgado y uniforme
+    function shuffleArray(array) {
+      const copy = [...array];
+      for (let i = copy.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [copy[i], copy[j]] = [copy[j], copy[i]];
+      }
+      return copy;
+    }
+
+    // Inicialización
+    window.addEventListener('DOMContentLoaded', () => {
+      loadQuestionsBank();
+      navigate('home');
+    });
+
+    function loadQuestionsBank() {
+      /*  const stored = localStorage.getItem('equiz_questions');
+        if (stored) {
+          try {
+            const parsed = JSON.parse(stored);
+            questionsBank = Array.isArray(parsed) && parsed.length > 0 
+              ? deduplicateQuestions(parsed) 
+              : deduplicateQuestions(DEFAULT_QUESTIONS);
+          } catch(e) {
+            questionsBank = deduplicateQuestions(DEFAULT_QUESTIONS);
+          }
+        } else {*/
+      questionsBank = deduplicateQuestions(DEFAULT_QUESTIONS);
+      localStorage.setItem('equiz_questions', JSON.stringify(questionsBank));
+      //}
+      updateHomeCount();
+    }
+
+    function updateHomeCount() {
+      const uniqueList = deduplicateQuestions(questionsBank);
+      const total = uniqueList.length;
+
+      // Calcular cuántas no han sido vistas aún en la sesión/ronda actual
+      const unaskedCount = uniqueList.filter(q => !askedQuestionKeys.has(getQuestionKey(q))).length;
+
+      const badge = document.getElementById('home-total-badge');
+      if (badge) {
+        if (unaskedCount < total && unaskedCount > 0) {
+          badge.textContent = `📚 ${total} preguntas disponibles (${unaskedCount} sin ver en este ciclo)`;
+        } else {
+          badge.textContent = `📚 ${total} preguntas disponibles`;
+        }
+      }
+
+      const roundInfo = document.getElementById('round-info');
+      const roundStatusText = document.getElementById('round-status-text');
+      if (roundInfo && roundStatusText) {
+        if (askedQuestionKeys.size > 0 && total > 0) {
+          roundInfo.style.display = 'flex';
+          roundStatusText.textContent = `Has visto ${total - unaskedCount} de ${total} preguntas sin repetir.`;
+        } else {
+          roundInfo.style.display = 'none';
+        }
+      }
+
+      const chipAll = document.getElementById('chip-all');
+      if (chipAll) chipAll.textContent = `Todas (${total})`;
+
+      if (selectedCount > total) selectedCount = total;
+      if (selectedCount <= 0 && total > 0) selectedCount = Math.min(10, total);
+
+      const countLabel = document.getElementById('selected-count-label');
+      if (countLabel) countLabel.textContent = selectedCount;
+    }
+
+    function resetRound() {
+      askedQuestionKeys.clear();
+      updateHomeCount();
+    }
+
+    function navigate(viewName) {
+      document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+      const target = document.getElementById('view-' + viewName);
+      if (target) target.classList.add('active');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+
+      if (viewName === 'home') updateHomeCount();
+      if (viewName === 'history') renderHistoryList();
+      if (viewName === 'import') {
+        document.getElementById('import-alert-container').innerHTML = '';
+        document.getElementById('json-input').value = JSON.stringify(questionsBank, null, 2);
+      }
+    }
+
+    // Configuración del quiz
+    function selectCount(val) {
+      document.querySelectorAll('#chips-container .chip').forEach(c => c.classList.remove('active'));
+      const total = deduplicateQuestions(questionsBank).length;
+      if (val === 'all') {
+        selectedCount = total;
+        const chipAll = document.getElementById('chip-all');
+        if (chipAll) chipAll.classList.add('active');
+      } else {
+        selectedCount = Math.min(val, total);
+        if (event && event.target) event.target.classList.add('active');
+      }
+      document.getElementById('selected-count-label').textContent = selectedCount;
+    }
+
+    function adjustCount(delta) {
+      const total = deduplicateQuestions(questionsBank).length;
+      selectedCount = Math.max(1, Math.min(total, selectedCount + delta));
+      document.getElementById('selected-count-label').textContent = selectedCount;
+      document.querySelectorAll('#chips-container .chip').forEach(c => c.classList.remove('active'));
+    }
+
+    // Lógica del Quiz con Selección Aleatoria Uniforme y Cero Repeticiones
+    function startQuiz() {
+      // 1. Obtener banco limpio y estrictamente deduplicado
+      const uniqueBank = deduplicateQuestions(questionsBank);
+      if (!uniqueBank || uniqueBank.length === 0) {
+        alert('No hay preguntas en el banco.');
+        return;
+      }
+
+      // 2. Determinar la cantidad a evaluar sin exceder el banco disponible
+      const totalAvailable = uniqueBank.length;
+      const count = Math.max(1, Math.min(selectedCount, totalAvailable));
+
+      // 3. Filtrar preguntas que aún no han salido en los intentos previos de esta ronda
+      let candidatePool = uniqueBank.filter(q => !askedQuestionKeys.has(getQuestionKey(q)));
+
+      // Si las preguntas no vistas son insuficientes para la cantidad solicitada,
+      // se reinicia el ciclo de preguntas vistas para garantizar que siempre se puedan responder 'count' preguntas
+      if (candidatePool.length < count) {
+        askedQuestionKeys.clear();
+        candidatePool = [...uniqueBank];
+      }
+
+      // 4. Barajar con algoritmo Fisher-Yates y seleccionar exactamente 'count' preguntas únicas (muestreo sin reemplazo)
+      const shuffledCandidates = shuffleArray(candidatePool);
+      const picked = shuffledCandidates.slice(0, count);
+
+      // Registrar las preguntas seleccionadas para que no se repitan en las siguientes tandas de la sesión
+      picked.forEach(q => askedQuestionKeys.add(getQuestionKey(q)));
+
+      // 5. Barajar las opciones de cada pregunta con Fisher-Yates preservando la respuesta correcta
+      const activeQuestions = picked.map(q => {
+        const correctText = q.opciones[q.indiceCorrecto];
+        const shuffledOpts = shuffleArray(q.opciones);
+        const newCorrectIdx = shuffledOpts.indexOf(correctText);
+        return {
+          questionText: q.pregunta,
+          options: shuffledOpts,
+          correctIndex: newCorrectIdx,
+          explanation: q.explicacion,
+          category: q.categoria || 'Nefrología',
+          selectedIndex: -1
+        };
+      });
+
+      currentQuizSession = {
+        questions: activeQuestions,
+        currentIndex: 0
+      };
+
+      renderCurrentQuestion();
+      navigate('quiz');
+    }
+
+    function renderCurrentQuestion() {
+      const q = currentQuizSession.questions[currentQuizSession.currentIndex];
+      const total = currentQuizSession.questions.length;
+      const currentNum = currentQuizSession.currentIndex + 1;
+
+      document.getElementById('quiz-category').textContent = q.category;
+      document.getElementById('quiz-counter').textContent = `Pregunta ${currentNum} de ${total}`;
+      document.getElementById('quiz-progress').style.width = `${(currentNum / total) * 100}%`;
+      document.getElementById('quiz-question-text').textContent = q.questionText;
+
+      const letters = ['A', 'B', 'C', 'D', 'E'];
+      const container = document.getElementById('quiz-options-container');
+      container.innerHTML = '';
+
+      q.options.forEach((opt, idx) => {
+        const div = document.createElement('div');
+        div.className = `option-item ${q.selectedIndex === idx ? 'selected' : ''}`;
+        div.innerHTML = `
+          <div class="option-letter">${letters[idx] || (idx + 1)}</div>
+          <div>${opt}</div>
+        `;
+        div.onclick = () => {
+          q.selectedIndex = idx;
+          renderCurrentQuestion();
+        };
+        container.appendChild(div);
+      });
+
+      document.getElementById('btn-prev').style.visibility = currentQuizSession.currentIndex > 0 ? 'visible' : 'hidden';
+      const isLast = currentQuizSession.currentIndex === total - 1;
+      const nextBtn = document.getElementById('btn-next');
+      nextBtn.textContent = isLast ? 'Finalizar y Evaluar ✓' : 'Siguiente →';
+      nextBtn.disabled = q.selectedIndex === -1;
+    }
+
+    function prevQuestion() {
+      if (currentQuizSession.currentIndex > 0) {
+        currentQuizSession.currentIndex--;
+        renderCurrentQuestion();
+      }
+    }
+
+    function nextQuestion() {
+      const total = currentQuizSession.questions.length;
+      if (currentQuizSession.currentIndex < total - 1) {
+        currentQuizSession.currentIndex++;
+        renderCurrentQuestion();
+      } else {
+        finishQuiz();
+      }
+    }
+
+    function quitQuiz() {
+      if (confirm('¿Abandonar el quiz actual? Tu progreso no se guardará.')) {
+        navigate('home');
+      }
+    }
+
+    function finishQuiz() {
+      const questions = currentQuizSession.questions;
+      const total = questions.length;
+      let correct = 0;
+      const details = questions.map(q => {
+        const isCorrect = q.selectedIndex === q.correctIndex;
+        if (isCorrect) correct++;
+        return {
+          questionText: q.questionText,
+          options: q.options,
+          selectedIndex: q.selectedIndex,
+          correctIndex: q.correctIndex,
+          explanation: q.explanation,
+          isCorrect: isCorrect
+        };
+      });
+
+      const pct = Math.round((correct / total) * 100);
+
+      const attempt = {
+        id: Date.now(),
+        timestamp: Date.now(),
+        totalQuestions: total,
+        correctCount: correct,
+        wrongCount: total - correct,
+        scorePercentage: pct,
+        details: details
+      };
+
+      saveAttempt(attempt);
+      currentAttempt = attempt;
+      selectedAttemptForReview = attempt;
+
+      // Renderizar resultado
+      document.getElementById('res-pct').textContent = `${pct}%`;
+      document.getElementById('res-score-sub').textContent = `${correct} / ${total} aciertos`;
+
+      const feedback = document.getElementById('res-feedback');
+      if (pct >= 80) {
+        feedback.textContent = '¡Excelente nivel para examen de residencia! Tienes un sólido dominio clínico e histológico.';
+      } else if (pct >= 60) {
+        feedback.textContent = '¡Buen resultado! Revisa las perlas clínicas de las preguntas falladas para afianzar conceptos finos.';
+      } else {
+        feedback.textContent = 'Continúa reforzando. Revisa detalladamente cada explicación pedagógica para fijar la información en la memoria.';
+      }
+
+      navigate('result');
+    }
+
+    function saveAttempt(attempt) {
+      const history = getHistory();
+      history.unshift(attempt);
+      localStorage.setItem('equiz_history', JSON.stringify(history));
+    }
+
+    function getHistory() {
+      const stored = localStorage.getItem('equiz_history');
+      return stored ? JSON.parse(stored) : [];
+    }
+
+    // Revisión y Perlas Clínicas
+    function openReview() {
+      selectedAttemptForReview = currentAttempt;
+      renderReview();
+      navigate('review');
+    }
+
+    function returnFromReview() {
+      if (currentAttempt && selectedAttemptForReview && currentAttempt.id === selectedAttemptForReview.id) {
+        navigate('result');
+      } else {
+        navigate('history');
+      }
+    }
+
+    function filterReview(tab) {
+      currentFilter = tab;
+      document.querySelectorAll('.filter-tabs .chip').forEach(c => c.classList.remove('active'));
+      document.getElementById('tab-' + tab).classList.add('active');
+      renderReview();
+    }
+
+    function renderReview() {
+      if (!selectedAttemptForReview) return;
+      const att = selectedAttemptForReview;
+
+      document.getElementById('review-score-header').textContent = `Puntaje: ${att.scorePercentage}% (${att.correctCount}/${att.totalQuestions} aciertos)`;
+      document.getElementById('cnt-all').textContent = att.details.length;
+      document.getElementById('cnt-wrong').textContent = att.wrongCount;
+      document.getElementById('cnt-correct').textContent = att.correctCount;
+
+      let list = att.details;
+      if (currentFilter === 'wrong') list = list.filter(d => !d.isCorrect);
+      if (currentFilter === 'correct') list = list.filter(d => d.isCorrect);
+
+      const container = document.getElementById('review-cards-list');
+      container.innerHTML = '';
+
+      if (list.length === 0) {
+        container.innerHTML = `<div style="text-align: center; padding: 40px; color: var(--text-muted);">No hay preguntas en esta categoría.</div>`;
+        return;
+      }
+
+      const letters = ['A', 'B', 'C', 'D', 'E'];
+
+      list.forEach((item, index) => {
+        const card = document.createElement('div');
+        card.className = `review-card ${item.isCorrect ? 'correct' : 'wrong'}`;
+
+        let optionsHtml = '';
+        item.options.forEach((opt, optIdx) => {
+          const isUser = optIdx === item.selectedIndex;
+          const isTarget = optIdx === item.correctIndex;
+          let badge = '';
+          let bgStyle = 'var(--surface-variant)';
+          let borderStyle = '1px solid var(--border)';
+
+          if (isTarget) {
+            bgStyle = 'var(--success-light)';
+            borderStyle = '2px solid var(--success)';
+            badge = `<span style="color: var(--success); font-weight: 800; font-size: 0.8rem; margin-left: 8px;">✓ Respuesta Correcta</span>`;
+          } else if (isUser && !item.isCorrect) {
+            bgStyle = 'var(--danger-light)';
+            borderStyle = '2px solid var(--danger)';
+            badge = `<span style="color: var(--danger); font-weight: 800; font-size: 0.8rem; margin-left: 8px;">✗ Tu Respuesta</span>`;
+          }
+
+          optionsHtml += `
+            <div style="padding: 10px 14px; background: ${bgStyle}; border: ${borderStyle}; border-radius: 8px; margin-bottom: 6px; font-size: 0.9rem; display: flex; justify-content: space-between; align-items: center;">
+              <span><strong>${letters[optIdx]}.</strong> ${opt}</span>
+              ${badge}
+            </div>
+          `;
+        });
+
+        card.innerHTML = `
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+            <span style="font-weight: 800; font-size: 0.95rem;">Pregunta #${index + 1}</span>
+            <span style="font-weight: 800; font-size: 0.82rem; padding: 3px 8px; border-radius: 6px; background: ${item.isCorrect ? 'var(--success-light)' : 'var(--danger-light)'}; color: ${item.isCorrect ? 'var(--success)' : 'var(--danger)'};">
+              ${item.isCorrect ? 'CORRECTA' : 'ERRÓNEA'}
+            </span>
+          </div>
+          <div style="font-weight: 600; font-size: 1rem; margin-bottom: 14px; line-height: 1.45;">${item.questionText}</div>
+          <div>${optionsHtml}</div>
+          <div class="pearl-box">
+            <div class="pearl-title">💡 Perla Médica / Refuerzo</div>
+            <div>${item.explanation}</div>
+          </div>
+        `;
+
+        container.appendChild(card);
+      });
+    }
+
+    // Historial
+    function renderHistoryList() {
+      const history = getHistory();
+      const container = document.getElementById('history-list-container');
+      const clearBtn = document.getElementById('btn-clear-history');
+
+      if (history.length === 0) {
+        clearBtn.style.display = 'none';
+        container.innerHTML = `
+          <div style="text-align: center; padding: 40px; color: var(--text-muted);">
+            <div style="font-size: 2.5rem; margin-bottom: 10px;">📝</div>
+            Aún no has completado ningún quiz.<br>Tus resultados se guardarán automáticamente aquí.
+          </div>
+        `;
+        return;
+      }
+
+      clearBtn.style.display = 'inline-flex';
+      container.innerHTML = '';
+
+      history.forEach(att => {
+        const dateStr = new Date(att.timestamp).toLocaleString('es-ES', { dateStyle: 'short', timeStyle: 'short' });
+        const item = document.createElement('div');
+        item.className = 'history-item';
+        item.onclick = () => {
+          selectedAttemptForReview = att;
+          currentFilter = 'all';
+          renderReview();
+          navigate('review');
+        };
+
+        item.innerHTML = `
+          <div>
+            <div style="font-size: 0.82rem; color: var(--text-muted); font-weight: 600;">${dateStr}</div>
+            <div style="font-size: 1.05rem; font-weight: 700;">${att.totalQuestions} Preguntas evaluadas</div>
+            <div style="font-size: 0.85rem; color: var(--text-muted);">${att.correctCount} aciertos • ${att.wrongCount} fallos</div>
+          </div>
+          <div style="text-align: right; display: flex; align-items: center; gap: 12px;">
+            <span style="font-size: 1.3rem; font-weight: 900; color: ${att.scorePercentage >= 80 ? 'var(--success)' : (att.scorePercentage >= 60 ? 'var(--warning)' : 'var(--danger)')};">
+              ${att.scorePercentage}%
+            </span>
+            <span style="color: var(--text-muted); font-size: 1.2rem;">→</span>
+          </div>
+        `;
+        container.appendChild(item);
+      });
+    }
+
+    function clearHistory() {
+      if (confirm('¿Deseas eliminar todo el historial de intentos guardado en este navegador?')) {
+        localStorage.removeItem('equiz_history');
+        renderHistoryList();
+      }
+    }
+
+    // Importación y Plantilla JSON
+    function loadTemplate() {
+      const template = [
+        {
+          "pregunta": "¿Cuál es la causa patogénica de la Amiloidosis AA en artritis reumatoidea?",
+          "opciones": [
+            "Depósito de cadenas livianas Kappa",
+            "Inflamación crónica que induce síntesis hepática de proteína A de fase aguda",
+            "Inmunocomplejos de IgM contra la membrana basal",
+            "Aurosomas tubulares por sales de oro"
+          ],
+          "indiceCorrecto": 1,
+          "explicacion": "La amiloidosis AA deriva de inflamación crónica prolongada que induce síntesis de proteína A sérica.",
+          "categoria": "Artritis Reumatoidea"
+        }
+      ];
+      document.getElementById('json-input').value = JSON.stringify(template, null, 2);
+    }
+
+    function saveImportedJson() {
+      const raw = document.getElementById('json-input').value.trim();
+      const alertBox = document.getElementById('import-alert-container');
+      alertBox.innerHTML = '';
+
+      if (!raw) {
+        alertBox.innerHTML = `<div class="alert alert-danger">Por favor ingresa un contenido JSON.</div>`;
+        return;
+      }
+
+      let parsed;
+      try {
+        parsed = JSON.parse(raw);
+        if (!Array.isArray(parsed)) {
+          if (parsed.preguntas && Array.isArray(parsed.preguntas)) parsed = parsed.preguntas;
+          else if (parsed.questions && Array.isArray(parsed.questions)) parsed = parsed.questions;
+          else throw new Error('El JSON debe ser un arreglo o contener una propiedad "preguntas".');
+        }
+      } catch (e) {
+        alertBox.innerHTML = `<div class="alert alert-danger">Error de sintaxis JSON: ${e.message}</div>`;
+        return;
+      }
+
+      // Validar cada elemento
+      for (let i = 0; i < parsed.length; i++) {
+        const item = parsed[i];
+        const qText = item.pregunta || item.question;
+        const opts = item.opciones || item.options;
+        const correctIdx = item.indiceCorrecto !== undefined ? item.indiceCorrecto : item.correctIndex;
+
+        if (!qText || typeof qText !== 'string' || !qText.trim()) {
+          alertBox.innerHTML = `<div class="alert alert-danger">Error en pregunta #${i + 1}: Falta el enunciado ('pregunta').</div>`;
+          return;
+        }
+        if (!opts || !Array.isArray(opts) || opts.length < 2) {
+          alertBox.innerHTML = `<div class="alert alert-danger">Error en pregunta #${i + 1}: Debe tener al menos 2 opciones.</div>`;
+          return;
+        }
+        if (correctIdx === undefined || typeof correctIdx !== 'number' || correctIdx < 0 || correctIdx >= opts.length) {
+          alertBox.innerHTML = `<div class="alert alert-danger">Error en pregunta #${i + 1}: 'indiceCorrecto' (${correctIdx}) fuera de rango (0 a ${opts.length - 1}).</div>`;
+          return;
+        }
+      }
+
+      // Normalizar formato
+      const normalized = parsed.map(p => ({
+        pregunta: p.pregunta || p.question,
+        opciones: p.opciones || p.options,
+        indiceCorrecto: p.indiceCorrecto !== undefined ? p.indiceCorrecto : p.correctIndex,
+        explicacion: p.explicacion || p.explanation || 'Respuesta correcta confirmada.',
+        categoria: p.categoria || p.category || 'Nefrología'
+      }));
+
+      const replaceAll = document.getElementById('check-replace-all').checked;
+      if (replaceAll) {
+        questionsBank = deduplicateQuestions(normalized);
+      } else {
+        questionsBank = deduplicateQuestions([...questionsBank, ...normalized]);
+      }
+
+      localStorage.setItem('equiz_questions', JSON.stringify(questionsBank));
+      askedQuestionKeys.clear();
+      updateHomeCount();
+
+      alertBox.innerHTML = `<div class="alert alert-success">¡Éxito! Se han importado correctamente las preguntas al navegador (Total único en banco: ${questionsBank.length}).</div>`;
+    }
+
+    function restoreInitialQuestions() {
+      const defaultUnique = deduplicateQuestions(DEFAULT_QUESTIONS);
+      if (confirm(`¿Restaurar el banco a las ${defaultUnique.length} preguntas originales de Residencia de Nefrología?`)) {
+        questionsBank = defaultUnique;
+        localStorage.setItem('equiz_questions', JSON.stringify(questionsBank));
+        askedQuestionKeys.clear();
+        updateHomeCount();
+        document.getElementById('json-input').value = JSON.stringify(questionsBank, null, 2);
+        document.getElementById('import-alert-container').innerHTML = `<div class="alert alert-success">Banco restaurado a las ${questionsBank.length} preguntas de examen por defecto.</div>`;
+      }
+    }
+  </script>
+</body>
+
+</html>
